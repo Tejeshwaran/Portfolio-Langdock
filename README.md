@@ -372,3 +372,5 @@ name.
   and CSS animations stop.
 - Scroll animations only change `opacity` and `transform` (GPU-friendly).
 - The chat widget is lazy-loaded (`React.lazy`) in its own small file.
+#   P o r t f o l i o - L a n g d o c k  
+ 
