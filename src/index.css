@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    /* Dark scrollbars and form controls */
+    color-scheme: dark;
+    /* Smooth scrolling for the floating nav and "Start a new conversation" */
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-body antialiased;
+  }
+
+  /* Sections stop below the sticky header when jumped to */
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  /* One clear, consistent keyboard focus style everywhere */
+  :focus-visible {
+    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: theme('colors.accent.soft');
+    color: theme('colors.ink');
+  }
+}
+
+/* Hidden scrollbars everywhere — the page, the chat boxes and the chip rows
+   still scroll normally (mouse wheel, touch, keyboard). The blue line at the
+   top (ScrollProgress.jsx) shows how far down you are instead. */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge */
+}
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Edge, Safari */
+}
+
+/* Slide mode (components/SlideDeck.jsx): the page itself never scrolls;
+   only the content inside a slide may, when it is taller than the screen. */
+html.deck-mode,
+html.deck-mode body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Reduced motion: turn off CSS animations and smooth scrolling.
+   Framer Motion is handled separately by <MotionConfig reducedMotion="user">. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

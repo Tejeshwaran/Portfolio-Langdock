@@ -1,0 +1,8 @@
+node_modules
+dist
+.DS_Store
+*.log
+
+# Design drafts (not part of the site) and local tool settings
+UI Ideas/
+.claude/
