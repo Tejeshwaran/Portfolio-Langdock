@@ -214,7 +214,7 @@ const PromptComposer = forwardRef(function PromptComposer(
 
   const isLarge = size === 'large'
   const iconButton =
-    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-ink transition-colors hover:bg-white/10'
+    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-ink transition-colors hover:bg-white/10 sm:h-9 sm:w-9'
 
   return (
     <div className="w-full">
@@ -286,8 +286,8 @@ const PromptComposer = forwardRef(function PromptComposer(
           placeholder={speech.isListening ? t('listening') : placeholder}
           autoComplete="off"
           enterKeyHint="send"
-          className={`min-w-0 flex-1 bg-transparent px-2 text-ink placeholder:text-muted focus:outline-none focus-visible:outline-none ${
-            isLarge ? 'text-[17px]' : 'text-[15px]'
+          className={`min-w-0 flex-1 bg-transparent px-1 sm:px-2 text-ink placeholder:text-muted focus:outline-none focus-visible:outline-none ${
+            isLarge ? 'text-[17px] placeholder:text-[14px] sm:placeholder:text-[17px]' : 'text-[15px]'
           }`}
         />
 
@@ -296,7 +296,7 @@ const PromptComposer = forwardRef(function PromptComposer(
           type="button"
           onClick={onToggleThink}
           aria-pressed={thinkMode}
-          className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[15px] transition-colors ${
+          className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-[15px] sm:h-9 sm:px-2.5 transition-colors ${
             thinkMode ? 'bg-accent-soft text-accent' : 'text-body hover:bg-white/10'
           }`}
         >
@@ -323,7 +323,7 @@ const PromptComposer = forwardRef(function PromptComposer(
             disabled={isBusy}
             aria-label={t('send')}
             className={`flex shrink-0 items-center justify-center rounded-full bg-ink text-canvas transition-opacity disabled:opacity-40 ${
-              isLarge ? 'h-11 w-11' : 'h-9 w-9'
+              isLarge ? 'h-10 w-10 sm:h-11 sm:w-11' : 'h-9 w-9'
             }`}
           >
             <ArrowUp size={20} strokeWidth={2.25} aria-hidden="true" />
@@ -335,7 +335,7 @@ const PromptComposer = forwardRef(function PromptComposer(
             aria-pressed={isVoiceListening}
             aria-label={isVoiceListening ? t('stopVoice') : t('startVoice')}
             className={`flex shrink-0 items-center justify-center rounded-full bg-accent-fill text-canvas transition-transform hover:scale-105 ${
-              isLarge ? 'h-11 w-11' : 'h-9 w-9'
+              isLarge ? 'h-10 w-10 sm:h-11 sm:w-11' : 'h-9 w-9'
             }`}
           >
             {isVoiceListening ? <ListeningBars /> : <AudioLines size={isLarge ? 20 : 18} aria-hidden="true" />}

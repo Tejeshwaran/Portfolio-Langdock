@@ -262,7 +262,9 @@ const conversation = {
   // The ChatGPT-style home screen
   hero: {
     heading: L('Tejeshwaran is a Web Developer and Data Analyst', 'Tejeshwaran ist Webentwickler und Datenanalyst'),
-    placeholder: L('Ask anything', 'Frag alles'),
+    placeholder: L('Typing ❌ Just scrolling ✅', 'Tippen ❌ Einfach scrollen ✅'),
+    // Phones have less room in the prompt bar, so they get a shorter version
+    placeholderShort: L('Typing ❌ Scrolling ✅', 'Tippen ❌ Scrollen ✅'),
   },
   about: {
     question: L('Who is Tejeshwaran?', 'Wer ist Tejeshwaran?'),

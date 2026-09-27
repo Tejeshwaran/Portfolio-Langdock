@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowDown, SquarePen } from 'lucide-react'
 import ChatThread from '../components/ChatThread'
@@ -39,6 +39,19 @@ function scrollToTop(reduceMotion) {
   })
 }
 
+/** true on phone-sized screens (narrower than Tailwind's `sm`, 640px) */
+function useIsPhone() {
+  const query = '(max-width: 639px)'
+  const [isPhone, setIsPhone] = useState(() => window.matchMedia(query).matches)
+  useEffect(() => {
+    const media = window.matchMedia(query)
+    const update = () => setIsPhone(media.matches)
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+  return isPhone
+}
+
 /**
  * The home screen — an LLM start page.
  *
@@ -60,6 +73,7 @@ export default function Hero() {
   const { hero } = data.conversation
   const { topics, suggestions } = data.askPortfolio
   const headingWords = hero.heading.split(' ')
+  const isPhone = useIsPhone()
   const chat = usePortfolioChat()
   const chatRef = useRef(chat)
   chatRef.current = chat
@@ -192,7 +206,7 @@ export default function Hero() {
         <PromptComposer
           ref={composerRef}
           id="hero-prompt"
-          placeholder={hero.placeholder}
+          placeholder={isPhone ? hero.placeholderShort : hero.placeholder}
           onSubmit={handleSubmit}
           isBusy={chat.isThinking}
           thinkMode={chat.thinkMode}
