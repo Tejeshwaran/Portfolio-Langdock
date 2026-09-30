@@ -66,7 +66,9 @@ src/
     HomeChat.jsx          the one shared home chat (home screen, sidebar, top bar)
     appNav.js             which sidebar item belongs to which slide + titles
     MessageActions.jsx    copy / "write again" buttons under an AI answer
-    PromptComposer.jsx    the "Ask anything" box (+ menu, Think, mic, voice/send)
+    PromptComposer.jsx    the "Ask anything" box (+ topics, Plugins, Auto/Think, mic, send)
+    ComposerExtras.jsx    bar under the home box: Projects folder · Connect with him
+    AssistantMark.jsx     the small solid mark in the AI avatar
     ChatThread.jsx        list of chat messages
     ThoughtTrace.jsx      "Thinking…" steps / "Thought for 1.8s" panel
     AIHeader.jsx          top bar of the old scrolling version (+ the EN | DE switch)
@@ -251,24 +253,40 @@ Where the browser supports it, the switch cross-fades the whole page.
 
 ## The home screen (Hero.jsx)
 
-- **Two states.** Empty: heading, prompt bar in the middle, suggestion
-  chips. After the first question: the chat thread fills the screen and the
-  prompt bar moves to the bottom. The move is animated with Framer Motion's
+- **Start page (like an AI workspace's "new chat").** A pill at the top
+  ("Application for Langdock · Contact"), the headline, the prompt box in a
+  panel with a small bar underneath, and topic chips with icons.
+  - **Projects folder** (under the box): a list of the projects; a click
+    fades to that project's slide.
+  - **Connect with him**: asks the chat for the contact details; the small
+    icons next to it are direct links (email, portfolio website, LinkedIn
+    when its URL is filled in). File: `components/ComposerExtras.jsx`.
+- **Two states.** Empty: the start page above. After the first question:
+  the chat thread fills the screen and the prompt box moves to the bottom
+  (the panel and bar fold away). The move is animated with Framer Motion's
   `layout` prop, which measures the old and new position and slides between
   them with transforms.
 - **Heading.** Each word fades in after the previous one (variants with
   `staggerChildren`), like generated text.
-- **Prompt bar** (`PromptComposer.jsx`):
+- **Prompt box** (`PromptComposer.jsx`):
   - `+` opens a menu of topics (from `askPortfolio.topics`).
-  - `Think` turns on Think mode: before answering, the AI shows its steps
-    (read the question → search the topics → which keyword matched → write
-    the answer). These steps describe what `answerEngine.js` really does.
-  - Microphone: dictation. Your speech is typed into the field.
-  - Blue button: voice mode. Speak, the question is sent automatically and
-    the answer is read aloud (`speechSynthesis`). When the field has text,
-    the button turns into the send button.
+  - **Plugins** (the three small icons): what the assistant can use —
+    Résumé data (always on), Voice mode (on/off switch) and English /
+    German (asks the chat to switch the language). All of them really work.
+  - **Auto** (the "model" picker, with the assistant's mark): the answer
+    mode. Auto answers directly; Think first shows its steps (read the
+    question → search the topics → which keyword matched → write the
+    answer). These steps describe what `answerEngine.js` really does. No
+    real AI model is used — the answers come from `portfolioData.js`.
+  - Microphone: dictation — your speech is typed into the field. With the
+    Voice mode plugin on, it becomes voice mode: speak, the question is
+    sent automatically and the answer is read aloud (`speechSynthesis`).
+  - Send: gray until there is text.
   - Voice uses the browser's built-in Web Speech API (Chrome, Edge, Safari).
-    Other browsers show a short message instead.
+    Other browsers show a short message in the box instead.
+- **Answers** have a round avatar with the assistant's mark
+  (`AssistantMark.jsx`, a simple hooded figure like the logo), and copy /
+  "write again" buttons underneath.
 - **Shortcut:** press `/` anywhere to jump into the prompt box (on the
   other slides: into the box at the bottom).
 - **Buttons type for the visitor:** the name in the sidebar (contact) and

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Sparkles } from 'lucide-react'
+import AssistantMark from './AssistantMark'
 import { useLanguage } from '../i18n/LanguageContext'
 
 // Shared entrance animation: fade in + slide up a little.
@@ -44,9 +44,9 @@ export default function ChatMessage({ role, visible = true, actions, children })
     >
       <div
         aria-hidden="true"
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-accent"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line-strong bg-canvas text-ink"
       >
-        <Sparkles size={15} strokeWidth={2} />
+        <AssistantMark className="h-[17px] w-[17px]" />
       </div>
       {/* pt-1: the first line of text sits level with the middle of the avatar */}
       <div className="min-w-0 flex-1 pt-1">

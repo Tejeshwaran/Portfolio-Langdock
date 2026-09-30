@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown, Layers } from 'lucide-react'
 import ChatThread from '../components/ChatThread'
-import PromptComposer from '../components/PromptComposer'
+import ComposerExtras from '../components/ComposerExtras'
+import PromptComposer, { TOPIC_ICONS } from '../components/PromptComposer'
 import { useHomeChat } from '../components/HomeChat'
 import { onAskRequest, onLanguageSwitch } from '../utils/askEvents'
 import useScrollFade from '../hooks/useScrollFade'
@@ -63,7 +64,7 @@ function scrollToTop(reduceMotion) {
 export default function Hero() {
   const { data, t } = useLanguage()
   const { hero } = data.conversation
-  const { topics, suggestions } = data.askPortfolio
+  const { topics, contactQuestion } = data.askPortfolio
   const headingWords = hero.heading.split(' ')
   const chat = useHomeChat()
   const chatRef = useRef(chat)
@@ -164,13 +165,23 @@ export default function Hero() {
             variants={headingContainer}
             initial="hidden"
             animate="shown"
-            className="mb-9 text-center"
+            className="mb-7 text-center"
           >
-            {/* Small terminal-style label, as in the concept */}
-            <motion.p variants={headingWord} className="mb-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
-              {data.onboarding.hello.eyebrow}
-            </motion.p>
-            <h1 className="text-balance font-display text-[34px] font-medium leading-[1.08] tracking-[-0.04em] text-ink sm:text-[48px]">
+            {/* Status pill at the top, like the "Trial … Upgrade" pill in AI apps */}
+            <motion.div
+              variants={headingWord}
+              className="mb-8 inline-flex items-center gap-3 rounded-full bg-surface px-4 py-2 text-[13.5px] text-body sm:mb-10"
+            >
+              {data.onboarding.badge}
+              <button
+                type="button"
+                onClick={() => composerRef.current?.typeAndSubmit(contactQuestion)}
+                className="font-medium text-accent transition-colors hover:text-accent-strong"
+              >
+                {t('contact')}
+              </button>
+            </motion.div>
+            <h1 className="text-balance font-display text-[28px] font-medium leading-[1.15] tracking-[-0.025em] text-ink sm:text-[34px]">
               {headingWords.map((word, index) => (
                 <motion.span key={`${word}-${index}`} variants={headingWord} className="inline-block">
                   {word}
@@ -183,18 +194,39 @@ export default function Hero() {
       </AnimatePresence>
 
       {/* The prompt box. `layout` animates its move from the middle to the bottom. */}
+      {/* On the start page the box sits in a wider panel with a small bar
+          underneath (projects folder · connect); in a chat only the box stays. */}
       <motion.div layout="position" transition={{ type: 'spring', stiffness: 260, damping: 32 }}>
-        <PromptComposer
-          ref={composerRef}
-          id="hero-prompt"
-          placeholder={hero.placeholder}
-          onSubmit={handleSubmit}
-          isBusy={chat.isThinking}
-          thinkMode={chat.thinkMode}
-          onToggleThink={chat.toggleThinkMode}
-          topics={topics}
-          menuPlacement={isChatting ? 'up' : 'down'}
-        />
+        <div
+          className={`rounded-[20px] border transition-colors duration-300 ${
+            isChatting || !deck.isDeck ? 'border-transparent' : 'border-line bg-surface'
+          }`}
+        >
+          <PromptComposer
+            ref={composerRef}
+            id="hero-prompt"
+            placeholder={hero.placeholder}
+            onSubmit={handleSubmit}
+            isBusy={chat.isThinking}
+            thinkMode={chat.thinkMode}
+            onToggleThink={chat.toggleThinkMode}
+            topics={topics}
+            menuPlacement={isChatting ? 'up' : 'down'}
+          />
+          <AnimatePresence initial={false}>
+            {!isChatting && deck.isDeck && (
+              <motion.div
+                key="extras"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                <ComposerExtras />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.div>
 
       {/* Suggestion chips (empty state only) */}
@@ -206,19 +238,23 @@ export default function Hero() {
             animate={{ opacity: 1, transition: { delay: 0.7, duration: 0.4 } }}
             exit={{ opacity: 0, transition: { duration: 0.15 } }}
             aria-label={t('suggestedQuestions')}
-            className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0"
+            className="-mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-2.5 sm:overflow-visible sm:px-0"
           >
-            {suggestions.slice(0, 4).map((suggestion) => (
-              <li key={suggestion} className="shrink-0">
-                <button
-                  type="button"
-                  onClick={() => chat.ask(suggestion)}
-                  className="rounded-full border border-line px-3.5 py-1.5 text-[13px] text-muted transition-colors hover:border-line-strong hover:bg-ink/5 hover:text-ink"
-                >
-                  {suggestion}
-                </button>
-              </li>
-            ))}
+            {topics.map((topic) => {
+              const Icon = TOPIC_ICONS[topic.icon] || Layers
+              return (
+                <li key={topic.label} className="shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => chat.ask(topic.question)}
+                    className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-[14px] text-body transition-colors hover:border-line-strong hover:bg-ink/5 hover:text-ink"
+                  >
+                    <Icon size={16} strokeWidth={1.75} aria-hidden="true" className="text-muted" />
+                    {topic.label}
+                  </button>
+                </li>
+              )
+            })}
           </motion.ul>
         )}
       </AnimatePresence>

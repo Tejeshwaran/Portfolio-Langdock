@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, Copy, RotateCw } from 'lucide-react'
+import { Check, ChevronDown, Copy, RotateCw } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
 
 const actionButton =
-  'flex h-7 w-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-ink/5 hover:text-ink'
+  'flex h-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-ink/5 hover:text-ink'
 
 /**
  * MessageActions — the small buttons under an AI answer, as in chat apps:
@@ -40,13 +40,20 @@ export default function MessageActions({ text, onRegenerate, visible = true }) {
         onClick={copyText}
         aria-label={isCopied ? t('answerCopied') : t('copyAnswer')}
         title={isCopied ? t('answerCopied') : t('copyAnswer')}
-        className={actionButton}
+        className={`${actionButton} w-7`}
       >
         {isCopied ? <Check size={15} aria-hidden="true" className="text-success" /> : <Copy size={15} aria-hidden="true" />}
       </button>
       {onRegenerate && (
-        <button type="button" onClick={onRegenerate} aria-label={t('regenerate')} title={t('regenerate')} className={actionButton}>
+        <button
+          type="button"
+          onClick={onRegenerate}
+          aria-label={t('regenerate')}
+          title={t('regenerate')}
+          className={`${actionButton} gap-0.5 px-1.5`}
+        >
           <RotateCw size={15} aria-hidden="true" />
+          <ChevronDown size={12} aria-hidden="true" />
         </button>
       )}
     </div>

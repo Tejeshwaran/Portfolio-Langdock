@@ -3,8 +3,9 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
   ArrowUp,
   AudioLines,
-  Brain,
   Briefcase,
+  Check,
+  FileText,
   FolderKanban,
   GraduationCap,
   Languages,
@@ -13,11 +14,13 @@ import {
   Mic,
   Plus,
 } from 'lucide-react'
+import AssistantMark from './AssistantMark'
 import useSpeechRecognition from '../hooks/useSpeechRecognition'
 import { useLanguage } from '../i18n/LanguageContext'
+import { requestAsk } from '../utils/askEvents'
 
 // Icon names from portfolioData.askPortfolio.topics → Lucide icons
-const TOPIC_ICONS = {
+export const TOPIC_ICONS = {
   education: GraduationCap,
   experience: Briefcase,
   projects: FolderKanban,
@@ -34,7 +37,7 @@ function ListeningBars() {
       {[0, 150, 300, 450].map((delayMs) => (
         <span
           key={delayMs}
-          className="h-full w-[3px] animate-voice-bar rounded-full bg-canvas"
+          className="h-full w-[3px] animate-voice-bar rounded-full bg-accent"
           style={{ animationDelay: `${delayMs}ms` }}
         />
       ))}
@@ -42,27 +45,70 @@ function ListeningBars() {
   )
 }
 
+/** A small on/off switch (used in the Plugins menu) */
+function Switch({ isOn }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${isOn ? 'bg-accent' : 'bg-line-strong'}`}
+    >
+      <span
+        className={`absolute h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${isOn ? 'translate-x-[18px]' : 'translate-x-0.5'}`}
+      />
+    </span>
+  )
+}
+
+/** The popup panel of a menu button (topics, plugins, answer mode) */
+function MenuPanel({ placement, align = 'left', width = 'w-64', children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: placement === 'up' ? 6 : -6, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: placement === 'up' ? 6 : -6, scale: 0.98 }}
+      transition={{ duration: 0.15 }}
+      className={`absolute z-30 ${width} rounded-2xl border border-line bg-surface p-1.5 shadow-lift ${
+        align === 'right' ? 'right-0' : 'left-0'
+      } ${placement === 'up' ? 'bottom-full mb-3' : 'top-full mt-3'}`}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+// The small coloured "app icons" stacked on the Plugins button
+const PLUGIN_ICONS = [
+  { icon: FileText, color: 'text-sky-400' },
+  { icon: AudioLines, color: 'text-rose-400' },
+  { icon: Languages, color: 'text-emerald-400' },
+]
+
 /**
  * PromptComposer — the rounded "Ask anything" box.
  *
  *  size="large" (home):     Ask anything ……………………………………………
- *                           [+] [Think]              [mic] [● / ↑]
- *  size="compact" (slides): [+]  Ask anything ……  [Think] [mic] [● / ↑]
+ *                           [+] [◉◉◉ Plugins]        [◭ Auto] [mic] [↑]
+ *  size="compact" (slides): [+]  Ask anything ……             [mic] [↑]
  *
- *  +      opens a menu of topics to ask about
- *  Think  toggles "Think" mode (answers show their reasoning steps)
- *  mic    dictation: your speech is typed into the field
- *  voice  voice mode: speak, the question is sent automatically and the
- *         answer is read aloud. When the field has text, this button
- *         becomes the send button.
+ *  +        a menu of topics to ask about
+ *  Plugins  what the assistant can use (all real):
+ *             · Résumé data — always on, every answer comes from it
+ *             · Voice mode  — on: the mic sends your spoken question by
+ *                             itself and the answer is read aloud
+ *             · English / German — asks the chat to switch the language
+ *  Auto     the answer mode ("model" picker): Auto answers directly,
+ *           Think shows each reasoning step first (thinkMode)
+ *  mic      dictation: your speech is typed into the field
+ *           (voice mode when that plugin is on)
+ *  ↑        send (gray until there is text)
  *
  * Voice uses the browser's Web Speech API (see useSpeechRecognition.js).
  *
- * Other components can control the bar through its ref:
+ * Other components can control the box through its ref:
  *   composerRef.current.focus()
  *   composerRef.current.typeAndSubmit('How can I contact Tejeshwaran?')
  * typeAndSubmit types the text letter by letter, like a person, and then
- * sends it. The header's "Contact" button uses this.
+ * sends it. The contact and EN | DE buttons use this.
  */
 const PromptComposer = forwardRef(function PromptComposer(
   {
@@ -80,14 +126,22 @@ const PromptComposer = forwardRef(function PromptComposer(
 ) {
   const [value, setValue] = useState('')
   const inputRef = useRef(null)
-  const { t } = useLanguage()
+  const { data, language, t } = useLanguage()
   const reduceMotion = useReducedMotion()
+  const isLarge = size === 'large'
 
   // Always call the newest onSubmit, even from a delayed timer
   const onSubmitRef = useRef(onSubmit)
   onSubmitRef.current = onSubmit
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const menuRef = useRef(null)
+
+  // Which menu is open: null | 'topics' | 'plugins' | 'mode'
+  const [openMenu, setOpenMenu] = useState(null)
+  const topicsRef = useRef(null)
+  const pluginsRef = useRef(null)
+  const modeRef = useRef(null)
+
+  // The "Voice mode" plugin
+  const [isVoicePluginOn, setIsVoicePluginOn] = useState(false)
 
   // true while listening in voice mode (auto-send), false for dictation
   const isVoiceModeRef = useRef(false)
@@ -105,22 +159,27 @@ const PromptComposer = forwardRef(function PromptComposer(
     },
   })
 
-  // Close the "+" menu on outside click or Escape
+  // Close an open menu on outside click or Escape
   useEffect(() => {
-    if (!isMenuOpen) return
+    if (!openMenu) return
+    const menuElement = { topics: topicsRef, plugins: pluginsRef, mode: modeRef }[openMenu].current
     const handlePointerDown = (event) => {
-      if (!menuRef.current?.contains(event.target)) setIsMenuOpen(false)
+      if (!menuElement?.contains(event.target)) setOpenMenu(null)
     }
-    const handleKeyDown = (event) => event.key === 'Escape' && setIsMenuOpen(false)
+    const handleKeyDown = (event) => event.key === 'Escape' && setOpenMenu(null)
     document.addEventListener('pointerdown', handlePointerDown)
     document.addEventListener('keydown', handleKeyDown)
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown)
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isMenuOpen])
+  }, [openMenu])
 
-  // ── Auto-typing (used by the header's "Contact" button) ──
+  function toggleMenu(name) {
+    setOpenMenu((current) => (current === name ? null : name))
+  }
+
+  // ── Auto-typing (used by the contact and EN | DE buttons) ──
   const [isAutoTyping, setIsAutoTyping] = useState(false)
   const autoTypeRef = useRef({ frameId: null, timeoutId: null })
 
@@ -133,7 +192,7 @@ const PromptComposer = forwardRef(function PromptComposer(
   function typeAndSubmit(text) {
     stopAutoTyping()
     speech.stop()
-    setIsMenuOpen(false)
+    setOpenMenu(null)
     setIsAutoTyping(true)
 
     // After the last letter: a short pause (so it can be read), then send.
@@ -166,7 +225,7 @@ const PromptComposer = forwardRef(function PromptComposer(
     autoTypeRef.current.frameId = requestAnimationFrame(typeFrame)
   }
 
-  // Stop a running auto-type if the bar disappears
+  // Stop a running auto-type if the box disappears
   useEffect(() => () => {
     cancelAnimationFrame(autoTypeRef.current.frameId)
     clearTimeout(autoTypeRef.current.timeoutId)
@@ -194,69 +253,62 @@ const PromptComposer = forwardRef(function PromptComposer(
     submitText()
   }
 
-  function toggleDictation() {
+  // The mic: dictation, or voice mode when the "Voice mode" plugin is on
+  function toggleMic() {
     if (speech.isListening) return speech.stop()
-    isVoiceModeRef.current = false
-    setIsVoiceMode(false)
-    speech.start()
-  }
-
-  function toggleVoiceMode() {
-    if (speech.isListening) return speech.stop()
-    isVoiceModeRef.current = true
-    setIsVoiceMode(true)
-    setValue('')
+    const useVoiceMode = isLarge && isVoicePluginOn
+    isVoiceModeRef.current = useVoiceMode
+    setIsVoiceMode(useVoiceMode)
+    if (useVoiceMode) setValue('')
     speech.start()
   }
 
   function pickTopic(topic) {
-    setIsMenuOpen(false)
+    setOpenMenu(null)
     onSubmit(topic.question, { fromVoice: false })
   }
 
-  const isLarge = size === 'large'
+  function pickMode(wantsThink) {
+    setOpenMenu(null)
+    if (wantsThink !== thinkMode) onToggleThink?.()
+  }
+
+  function askToSwitchLanguage() {
+    setOpenMenu(null)
+    const { toGerman, toEnglish } = data.askPortfolio.languageQuestions
+    requestAsk(language === 'en' ? toGerman : toEnglish)
+  }
+
   const iconButton =
     'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-ink/5 hover:text-ink sm:h-9 sm:w-9'
+  const menuRow = 'flex w-full items-start gap-3 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-ink/5'
 
-  // ── The pieces of the box (arranged differently for large / compact) ──
+  // ── The pieces of the box ──
 
   const topicsMenu = (
-    <div ref={menuRef} className="relative">
+    <div ref={topicsRef} className="relative">
       <button
         type="button"
-        onClick={() => setIsMenuOpen((open) => !open)}
-        aria-expanded={isMenuOpen}
+        onClick={() => toggleMenu('topics')}
+        aria-expanded={openMenu === 'topics'}
         aria-haspopup="true"
         aria-label={t('askAboutTopic')}
         className={iconButton}
       >
-        <motion.span animate={{ rotate: isMenuOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
+        <motion.span animate={{ rotate: openMenu === 'topics' ? 45 : 0 }} transition={{ duration: 0.2 }}>
           <Plus size={20} strokeWidth={1.75} aria-hidden="true" />
         </motion.span>
       </button>
-
       <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: menuPlacement === 'up' ? 6 : -6, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: menuPlacement === 'up' ? 6 : -6, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-            className={`absolute left-0 z-30 w-60 rounded-2xl border border-line bg-surface p-1.5 shadow-lift ${
-              menuPlacement === 'up' ? 'bottom-full mb-3' : 'top-full mt-3'
-            }`}
-          >
+        {openMenu === 'topics' && (
+          <MenuPanel placement={menuPlacement} width="w-60">
             <p className="px-2.5 pb-1 pt-1.5 text-xs text-muted">{t('askAbout')}</p>
             <ul>
               {topics.map((topic) => {
                 const Icon = TOPIC_ICONS[topic.icon] || Layers
                 return (
                   <li key={topic.label}>
-                    <button
-                      type="button"
-                      onClick={() => pickTopic(topic)}
-                      className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left text-sm text-ink transition-colors hover:bg-ink/5"
-                    >
+                    <button type="button" onClick={() => pickTopic(topic)} className={`${menuRow} items-center text-sm text-ink`}>
                       <Icon size={16} aria-hidden="true" className="text-muted" />
                       {topic.label}
                     </button>
@@ -264,7 +316,116 @@ const PromptComposer = forwardRef(function PromptComposer(
                 )
               })}
             </ul>
-          </motion.div>
+          </MenuPanel>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+
+  const pluginsMenu = (
+    <div ref={pluginsRef} className="relative">
+      <button
+        type="button"
+        onClick={() => toggleMenu('plugins')}
+        aria-expanded={openMenu === 'plugins'}
+        aria-haspopup="true"
+        className="inline-flex h-8 shrink-0 items-center gap-2 rounded-full px-2 text-[14px] font-medium text-body transition-colors hover:bg-ink/5 hover:text-ink sm:h-9 sm:px-2.5"
+      >
+        {/* Three small overlapping "app icons" */}
+        <span className="flex items-center" aria-hidden="true">
+          {PLUGIN_ICONS.map(({ icon: Icon, color }, index) => (
+            <span
+              key={index}
+              className={`flex h-[22px] w-[22px] items-center justify-center rounded-full bg-subtle ring-2 ring-composer ${color} ${
+                index > 0 ? '-ml-1.5' : ''
+              }`}
+            >
+              <Icon size={12} strokeWidth={2.25} />
+            </span>
+          ))}
+        </span>
+        <span className="hidden sm:inline">{t('plugins')}</span>
+        <span className="sr-only sm:hidden">{t('plugins')}</span>
+      </button>
+      <AnimatePresence>
+        {openMenu === 'plugins' && (
+          <MenuPanel placement={menuPlacement} width="w-72">
+            <p className="px-2.5 pb-1 pt-1.5 text-xs text-muted">{t('pluginsTitle')}</p>
+            <div className={`${menuRow} cursor-default hover:bg-transparent`}>
+              <FileText size={17} aria-hidden="true" className="mt-0.5 shrink-0 text-sky-400" />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm text-ink">{t('pluginResume')}</span>
+                <span className="block text-xs leading-snug text-muted">{t('pluginResumeText')}</span>
+              </span>
+              <span className="mt-0.5 shrink-0 text-xs text-muted">{t('alwaysOn')}</span>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isVoicePluginOn}
+              onClick={() => setIsVoicePluginOn((isOn) => !isOn)}
+              className={menuRow}
+            >
+              <AudioLines size={17} aria-hidden="true" className="mt-0.5 shrink-0 text-rose-400" />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm text-ink">{t('pluginVoice')}</span>
+                <span className="block text-xs leading-snug text-muted">{t('pluginVoiceText')}</span>
+              </span>
+              <Switch isOn={isVoicePluginOn} />
+            </button>
+            <button type="button" onClick={askToSwitchLanguage} className={menuRow}>
+              <Languages size={17} aria-hidden="true" className="mt-0.5 shrink-0 text-emerald-400" />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm text-ink">{t('pluginLanguage')}</span>
+                <span className="block text-xs leading-snug text-muted">{t('pluginLanguageText')}</span>
+              </span>
+              <span className="mt-0.5 shrink-0 font-mono text-[11px] uppercase text-muted">{language}</span>
+            </button>
+          </MenuPanel>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+
+  // The answer-mode picker, shown like a model picker: [◭ Auto]
+  const modeMenu = (
+    <div ref={modeRef} className="relative">
+      <button
+        type="button"
+        onClick={() => toggleMenu('mode')}
+        aria-expanded={openMenu === 'mode'}
+        aria-haspopup="true"
+        aria-label={`${t('answerMode')}: ${thinkMode ? t('think') : t('modeAuto')}`}
+        className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-[14px] font-semibold text-ink transition-colors hover:bg-ink/5 sm:h-9 sm:px-2.5"
+      >
+        <AssistantMark className="h-4 w-4" />
+        {thinkMode ? t('think') : t('modeAuto')}
+      </button>
+      <AnimatePresence>
+        {openMenu === 'mode' && (
+          <MenuPanel placement={menuPlacement} align="right" width="w-64">
+            <p className="px-2.5 pb-1 pt-1.5 text-xs text-muted">{t('answerMode')}</p>
+            {[
+              { isThink: false, label: t('modeAuto'), text: t('modeAutoText') },
+              { isThink: true, label: t('think'), text: t('modeThinkText') },
+            ].map((mode) => (
+              <button
+                key={mode.label}
+                type="button"
+                role="menuitemradio"
+                aria-checked={thinkMode === mode.isThink}
+                onClick={() => pickMode(mode.isThink)}
+                className={menuRow}
+              >
+                <AssistantMark className="mt-0.5 h-4 w-4 shrink-0 text-ink" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm text-ink">{mode.label}</span>
+                  <span className="block text-xs leading-snug text-muted">{mode.text}</span>
+                </span>
+                {thinkMode === mode.isThink && <Check size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-accent" />}
+              </button>
+            ))}
+          </MenuPanel>
         )}
       </AnimatePresence>
     </div>
@@ -282,107 +443,77 @@ const PromptComposer = forwardRef(function PromptComposer(
         value={value}
         readOnly={isAutoTyping}
         onChange={(event) => setValue(event.target.value)}
-        placeholder={speech.isListening ? t('listening') : placeholder}
+        // While listening it says so; a voice error shows here for a moment too
+        placeholder={speech.isListening ? t('listening') : speech.error || placeholder}
         autoComplete="off"
         enterKeyHint="send"
         className={`min-w-0 bg-transparent text-ink placeholder:text-muted focus:outline-none focus-visible:outline-none ${
-          isLarge ? 'block w-full px-2 py-1.5 text-[16px] sm:text-[17px]' : 'flex-1 px-1 text-[15px] sm:px-2'
+          isLarge ? 'block w-full px-2.5 py-2 text-[16px] sm:text-[17px]' : 'flex-1 px-1 text-[15px] sm:px-2'
         }`}
       />
     </>
   )
 
-  // Think mode toggle — in the large box it shows its label, like a menu button
-  const thinkButton = (
-    <button
-      type="button"
-      onClick={onToggleThink}
-      aria-pressed={thinkMode}
-      className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-[14px] font-medium transition-colors sm:h-9 sm:px-2.5 ${
-        thinkMode ? 'bg-accent-soft text-accent-strong' : 'text-body hover:bg-ink/5 hover:text-ink'
-      }`}
-    >
-      <Brain size={17} strokeWidth={1.75} aria-hidden="true" />
-      <span className={isLarge ? '' : 'hidden sm:inline'}>{t('think')}</span>
-      {!isLarge && <span className="sr-only sm:hidden">{t('thinkMode')}</span>}
-    </button>
-  )
-
   const micButton = (
     <button
       type="button"
-      onClick={toggleDictation}
-      aria-pressed={isDictating}
-      aria-label={isDictating ? t('stopDictation') : t('dictate')}
-      className={`${iconButton} ${isDictating ? 'bg-accent-soft text-accent' : ''}`}
+      onClick={toggleMic}
+      aria-pressed={speech.isListening}
+      aria-label={
+        isVoiceListening ? t('stopVoice') : isDictating ? t('stopDictation') : isLarge && isVoicePluginOn ? t('startVoice') : t('dictate')
+      }
+      className={`${iconButton} ${speech.isListening ? 'bg-accent-soft text-accent' : ''}`}
     >
-      <Mic size={18} strokeWidth={1.75} aria-hidden="true" />
+      {isVoiceListening ? <ListeningBars /> : <Mic size={18} strokeWidth={1.75} aria-hidden="true" />}
     </button>
   )
 
-  // Voice mode ↔ send. When the box has text, the voice button becomes "send".
-  const sendOrVoiceButton =
-    hasText && !speech.isListening ? (
-      <button
-        type="submit"
-        disabled={isBusy}
-        aria-label={t('send')}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-canvas transition-opacity disabled:opacity-40"
-      >
-        <ArrowUp size={19} strokeWidth={2.25} aria-hidden="true" />
-      </button>
-    ) : (
-      <button
-        type="button"
-        onClick={toggleVoiceMode}
-        aria-pressed={isVoiceListening}
-        aria-label={isVoiceListening ? t('stopVoice') : t('startVoice')}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-fill text-canvas transition-transform hover:scale-105"
-      >
-        {isVoiceListening ? <ListeningBars /> : <AudioLines size={18} aria-hidden="true" />}
-      </button>
-    )
+  // Send: gray and disabled until there is text, like in chat apps
+  const sendButton = (
+    <button
+      type="submit"
+      disabled={!hasText || isBusy}
+      aria-label={t('send')}
+      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-default ${
+        hasText ? 'bg-ink text-canvas' : 'bg-line-strong/70 text-muted'
+      } ${hasText && isBusy ? 'opacity-40' : ''}`}
+    >
+      <ArrowUp size={19} strokeWidth={2.25} aria-hidden="true" />
+    </button>
+  )
 
   return (
     <div className="w-full">
-      {/* Large (home screen): two rows, like a modern AI workspace —
-            [ Ask anything …                                   ]
-            [ +  Think                          mic  voice/send ]
-          Compact (slides, contact card): one row. */}
       <form
         onSubmit={handleFormSubmit}
-        className={`relative rounded-2xl border bg-composer transition-[border-color,box-shadow] duration-300 focus-within:border-line-strong ${
+        className={`relative rounded-[18px] border bg-composer transition-[border-color,box-shadow] duration-300 focus-within:border-line-strong ${
           isAutoTyping ? 'border-accent/60 shadow-[0_0_0_4px_rgb(var(--c-accent)/0.14)]' : 'border-line'
-        } ${isLarge ? 'px-2 pb-2 pt-2.5 shadow-card' : 'flex h-[52px] items-center gap-1 px-2 shadow-lift'}`}
+        } ${isLarge ? 'px-2 pb-2 pt-2' : 'flex h-[52px] items-center gap-1 px-2 shadow-lift'}`}
       >
         {isLarge ? (
           <>
             {input}
-            <div className="mt-1 flex items-center gap-0.5">
+            <div className="mt-1.5 flex items-center gap-0.5">
               {topicsMenu}
-              {thinkButton}
+              {pluginsMenu}
               <div className="flex-1" />
+              {modeMenu}
               {micButton}
-              {sendOrVoiceButton}
+              {sendButton}
             </div>
           </>
         ) : (
           <>
             {topicsMenu}
             {input}
-            {thinkButton}
             {micButton}
-            {sendOrVoiceButton}
+            {sendButton}
           </>
         )}
       </form>
 
-      {/* Voice errors / hints (read out by screen readers). The large box
-          keeps the line reserved, so nothing jumps when a message appears. */}
-      <p
-        aria-live="polite"
-        className={`px-5 text-center text-xs text-muted ${isLarge ? 'min-h-[1.25rem] pt-2' : speech.error ? 'pt-2' : ''}`}
-      >
+      {/* Voice errors / hints, read out by screen readers */}
+      <p aria-live="polite" className="sr-only">
         {speech.error}
       </p>
     </div>

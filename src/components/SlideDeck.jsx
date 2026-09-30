@@ -383,7 +383,7 @@ export function SlideStage() {
             >
               <SlideActiveContext.Provider value={isActive}>
                 {slide.fullBleed ? (
-                  <div className="mx-auto h-full max-w-3xl px-4 sm:px-6">{slide.element}</div>
+                  <div className="mx-auto h-full max-w-4xl px-4 sm:px-6">{slide.element}</div>
                 ) : (
                   // Centered on the screen, shrunk a little if it is too tall
                   <FitToScreen wide={slide.wide}>{slide.element}</FitToScreen>
