@@ -23,7 +23,7 @@ export default function Education({ educationIndex }) {
     <section id={sectionId} aria-label={t('topicEducation')} className="py-12 sm:py-16">
       <ConversationBlock
         // The small "EDUCATION" label only above the first degree
-        topic={!educationIndex ? t('topicEducation') : undefined}
+        topic={t('topicEducation')}
         question={question}
         answer={answer}
       >

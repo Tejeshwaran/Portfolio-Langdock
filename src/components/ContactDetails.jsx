@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, Copy, Github, Linkedin, Mail, MapPin } from 'lucide-react'
+import { CalendarDays, Check, Copy, Github, Linkedin, Mail, MapPin, Phone } from 'lucide-react'
 import PopIn from './PopIn'
 import { useLanguage } from '../i18n/LanguageContext'
 
 // Icon names from portfolioData.js → Lucide icons
-const DETAIL_ICONS = { email: Mail, location: MapPin, github: Github, linkedin: Linkedin }
+const DETAIL_ICONS = { email: Mail, phone: Phone, location: MapPin, birth: CalendarDays, github: Github, linkedin: Linkedin }
 
 /** A small button that copies a value and shows a tick for a moment */
 function CopyButton({ value, label }) {

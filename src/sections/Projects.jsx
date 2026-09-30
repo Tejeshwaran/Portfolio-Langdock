@@ -12,7 +12,6 @@ import { useLanguage } from '../i18n/LanguageContext'
  */
 export default function Projects({ projectIndex }) {
   const { data, t } = useLanguage()
-  const [firstProject] = data.projects
   const shown = projectIndex === undefined ? data.projects : [data.projects[projectIndex]]
   const sectionId = !projectIndex ? 'projects' : `projects-${projectIndex + 1}`
 
@@ -21,7 +20,7 @@ export default function Projects({ projectIndex }) {
       {shown.map((project) => (
         <ConversationBlock
           key={project.id}
-          topic={project === firstProject ? t('topicProjects') : undefined}
+          topic={t('topicProjects')}
           question={project.question}
           answer={project.answer}
         >

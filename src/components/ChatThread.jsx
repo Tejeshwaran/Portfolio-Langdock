@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Download } from 'lucide-react'
 import ChatMessage from './ChatMessage'
 import MessageActions from './MessageActions'
 import ContactDetails from './ContactDetails'
@@ -7,21 +7,43 @@ import PopIn, { RevealContext } from './PopIn'
 import ThinkingDots from './ThinkingDots'
 import ThoughtTrace from './ThoughtTrace'
 import TypewriterText from './TypewriterText'
+import { useSlideDeck } from './SlideDeck'
 import { useLanguage } from '../i18n/LanguageContext'
 
-/** The optional button under an answer (e.g. "Open portfolio") */
+const answerButton =
+  'inline-flex items-center gap-1.5 rounded-full border border-line bg-subtle px-3 py-1.5 text-sm text-ink transition-colors hover:border-line-strong'
+
+/**
+ * The optional button under an answer:
+ *  { label, slide }            → fades to that part of the portfolio
+ *  { label, href, download }   → opens a page, or downloads a file (the CV)
+ */
 function AnswerLink({ link }) {
   const { t } = useLanguage()
+  const deck = useSlideDeck()
+
+  if (link.slide) {
+    return (
+      <PopIn className="mt-3">
+        <button type="button" onClick={() => deck.goTo?.(link.slide)} className={answerButton}>
+          {link.label}
+          <ArrowRight size={14} aria-hidden="true" />
+        </button>
+      </PopIn>
+    )
+  }
+
   const isExternal = link.href.startsWith('http')
   return (
     <PopIn className="mt-3">
       <a
         href={link.href}
+        {...(link.download ? { download: '' } : {})}
         {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        className="inline-flex items-center gap-1.5 rounded-full border border-line bg-subtle px-3 py-1.5 text-sm text-ink transition-colors hover:border-line-strong"
+        className={answerButton}
       >
         {link.label}
-        <ArrowUpRight size={14} aria-hidden="true" />
+        {link.download ? <Download size={14} aria-hidden="true" /> : <ArrowUpRight size={14} aria-hidden="true" />}
         {isExternal && <span className="sr-only">{t('opensInNewTab')}</span>}
       </a>
     </PopIn>

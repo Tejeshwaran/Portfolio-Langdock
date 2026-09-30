@@ -1,15 +1,19 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { BarChart3, ChevronDown, Cloud, Code2 } from 'lucide-react'
+import { BarChart3, Brain, ChevronDown, Code2 } from 'lucide-react'
 import PopIn from './PopIn'
 import { useLanguage } from '../i18n/LanguageContext'
 
 // portfolioData.js stores an icon *name*; this maps it to a Lucide icon.
-const CATEGORY_ICONS = { chart: BarChart3, code: Code2, cloud: Cloud }
+const CATEGORY_ICONS = { chart: BarChart3, code: Code2, ai: Brain }
 
 /**
  * An expandable skill category (accordion item).
- * The card pops in, then every skill pops in one by one as you scroll.
+ *  - levels are written exactly as on the CV ("Advanced" / "Good")
+ *  - skills he is learning right now get a dashed outline and a
+ *    "Learning" tag, so nothing looks bigger than it is
+ *  - the last line says where the group was actually used (`evidence`)
+ * The card pops in, then every skill pops in one by one.
  */
 export default function SkillCard({ category, defaultOpen = true }) {
   const { t } = useLanguage()
@@ -75,26 +79,30 @@ export default function SkillCard({ category, defaultOpen = true }) {
                 <PopIn
                   as="li"
                   key={skill.name}
-                  className={`inline-flex items-center gap-2 rounded-lg border border-line bg-canvas py-1.5 pl-3 ${
-                    skill.level ? 'pr-1.5' : 'pr-3'
-                  }`}
+                  className={`inline-flex items-center gap-2 rounded-lg border py-1.5 pl-3 ${
+                    skill.learning ? 'border-dashed border-line-strong bg-transparent' : 'border-line bg-canvas'
+                  } ${skill.level || skill.learning ? 'pr-1.5' : 'pr-3'}`}
                 >
-                  <span className="text-sm font-medium text-ink">{skill.name}</span>
-                  {/* Level exactly as written on the résumé; no fake percentages */}
+                  <span className={`text-sm font-medium ${skill.learning ? 'text-body' : 'text-ink'}`}>{skill.name}</span>
+                  {/* Level exactly as written on the CV; no fake percentages */}
                   {skill.level && (
                     <span
                       className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${
-                        skill.level.key === 'very-good'
-                          ? 'bg-accent-soft text-accent-strong'
-                          : 'bg-subtle text-body'
+                        skill.level.key === 'advanced' ? 'bg-accent-soft text-accent-strong' : 'bg-subtle text-body'
                       }`}
                     >
                       {skill.level.label}
                     </span>
                   )}
+                  {skill.learning && (
+                    <span className="rounded-md border border-line px-2 py-0.5 text-[11px] text-muted">{t('learning')}</span>
+                  )}
                 </PopIn>
               ))}
             </ul>
+            {category.evidence && (
+              <p className="border-t border-line px-4 py-3 text-[12.5px] text-muted sm:px-5">{category.evidence}</p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

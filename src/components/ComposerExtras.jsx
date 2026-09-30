@@ -1,22 +1,25 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Folder, Globe, Linkedin, Mail } from 'lucide-react'
+import { FileText, Folder, Github, Linkedin, Mail, Phone } from 'lucide-react'
 import { PROJECT_ICONS, groupSlideId } from './appNav'
 import { useSlideDeck } from './SlideDeck'
+import useDismiss from '../hooks/useDismiss'
 import { useLanguage } from '../i18n/LanguageContext'
 import { requestAsk } from '../utils/askEvents'
+
+const menuRow =
+  'flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left text-sm text-ink transition-colors hover:bg-ink/5'
 
 /**
  * ComposerExtras — the thin bar under the home prompt box, in the style
  * of an AI workspace ("Work in a folder" · "Connect your apps"):
  *
- *   [📁 Projects folder]                 Connect with him  [✉] [🌐] [in]
+ *   [📁 CV & projects]              Connect with him  [✉] [☎] [GitHub] [in]
  *
- *  - Projects folder opens a small list of his projects; a click fades
- *    to that project's slide.
+ *  - CV & projects opens a small list: the CV (PDF download) and his
+ *    projects; a project click fades to that project's slide.
  *  - "Connect with him" asks the chat for the contact details; the small
- *    app icons are direct links: email, his portfolio website and
- *    LinkedIn (only when its URL is filled in portfolioData.js).
+ *    icons are direct links. Empty ones (e.g. LinkedIn) are left out.
  */
 export default function ComposerExtras() {
   const deck = useSlideDeck()
@@ -24,32 +27,18 @@ export default function ComposerExtras() {
   const { personal, askPortfolio } = data
   const [isFolderOpen, setIsFolderOpen] = useState(false)
   const folderRef = useRef(null)
-
-  // Close the folder list on outside click or Escape
-  useEffect(() => {
-    if (!isFolderOpen) return
-    const handlePointerDown = (event) => {
-      if (!folderRef.current?.contains(event.target)) setIsFolderOpen(false)
-    }
-    const handleKeyDown = (event) => event.key === 'Escape' && setIsFolderOpen(false)
-    document.addEventListener('pointerdown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isFolderOpen])
+  useDismiss(folderRef, isFolderOpen, () => setIsFolderOpen(false))
 
   function openProject(index) {
     setIsFolderOpen(false)
-    deck.goTo?.(groupSlideId('projects', index))
+    deck.goTo(groupSlideId('projects', index))
   }
 
-  // Small "app icons": only real links
   const apps = [
     { label: t('emailHim'), icon: Mail, color: 'text-rose-400', href: `mailto:${personal.email}` },
-    { label: t('portfolioSite'), icon: Globe, color: 'text-sky-400', href: personal.portfolioUrl, isExternal: true },
-    { label: 'LinkedIn', icon: Linkedin, color: 'text-blue-400', href: personal.linkedin, isExternal: true },
+    { label: t('phone'), icon: Phone, color: 'text-emerald-400', href: personal.phone && `tel:${personal.phone.replace(/\s/g, '')}` },
+    { label: 'GitHub', icon: Github, color: 'text-ink', href: personal.github, isExternal: true },
+    { label: 'LinkedIn', icon: Linkedin, color: 'text-sky-400', href: personal.linkedin, isExternal: true },
   ].filter((app) => app.href)
 
   return (
@@ -75,15 +64,17 @@ export default function ComposerExtras() {
               transition={{ duration: 0.15 }}
               className="absolute left-0 top-full z-30 mt-2 w-64 rounded-2xl border border-line bg-surface p-1.5 shadow-lift"
             >
+              <li>
+                <a href={personal.cv} download="" className={menuRow} onClick={() => setIsFolderOpen(false)}>
+                  <FileText size={16} aria-hidden="true" className="shrink-0 text-rose-400" />
+                  <span className="min-w-0 flex-1 truncate">{t('cvFile')}</span>
+                </a>
+              </li>
               {data.projects.map((project, index) => {
                 const Icon = PROJECT_ICONS[project.type] || Folder
                 return (
                   <li key={project.id}>
-                    <button
-                      type="button"
-                      onClick={() => openProject(index)}
-                      className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left text-sm text-ink transition-colors hover:bg-ink/5"
-                    >
+                    <button type="button" onClick={() => openProject(index)} className={menuRow}>
                       <Icon size={16} aria-hidden="true" className="shrink-0 text-muted" />
                       <span className="min-w-0 flex-1 truncate">{project.title}</span>
                     </button>

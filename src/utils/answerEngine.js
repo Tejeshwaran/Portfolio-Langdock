@@ -4,9 +4,12 @@
 // It is a simple keyword search, not a language model:
 //  1. Clean up the question (lower case, no punctuation).
 //  2. Is it a request to change the website language? → a command.
-//  3. Otherwise go through askPortfolio.responses in order;
+//  3. Does it ask about one skill ("Does he know React?")? → that skill's
+//     answer (askPortfolio.skillAnswers, built from the skill data).
+//  4. Otherwise go through askPortfolio.responses in order;
 //     the first response with a keyword inside the question wins.
-//  4. Nothing matched → the fallback answer.
+//  5. Nothing matched → the fallback answer.
+// Every answer is written from portfolioData.js, so it cannot invent facts.
 // ─────────────────────────────────────────────────────────────
 
 /**
@@ -27,6 +30,19 @@ const SWITCH_WORDS = ['change', 'switch', 'translate', 'ändere', 'ändern', 'we
 const LANGUAGE_WORDS = {
   de: ['german', 'deutsch'],
   en: ['english', 'englisch'],
+}
+
+// Words that turn a question into "does he know X?"
+const KNOW_WORDS = [
+  'know', 'use ', 'uses', 'used', 'experience with', 'experienced', 'familiar', 'can he', 'does he', 'worked with',
+  'work with', 'good at', 'skilled', 'kennt', 'kann er', 'beherrscht', 'erfahrung mit', 'nutzt', 'arbeitet er mit',
+  'kenntnisse in',
+]
+
+/** The skill a "does he know …?" question is about, or null */
+function findSkillAnswer(normalizedQuestion, skillAnswers = []) {
+  if (!KNOW_WORDS.some((word) => normalizedQuestion.includes(word))) return null
+  return skillAnswers.find((skill) => skill.names.some((name) => normalizedQuestion.includes(name))) || null
 }
 
 /**
@@ -78,6 +94,11 @@ export function findAnswer(question, { askPortfolio, language, t }) {
       details: null,
       command: isAlready ? null : { type: 'set-language', language: targetLanguage },
     }
+  }
+
+  const skill = findSkillAnswer(normalizedQuestion, askPortfolio.skillAnswers)
+  if (skill) {
+    return { answer: skill.answer, topic: 'skill', keyword: skill.name, link: skill.link, details: null, command: null }
   }
 
   for (const response of askPortfolio.responses) {

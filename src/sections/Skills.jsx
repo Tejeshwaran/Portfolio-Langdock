@@ -22,7 +22,7 @@ export default function Skills({ skillIndex }) {
 
   return (
     <section id={sectionId} aria-label={t('topicSkills')} className="py-12 sm:py-16">
-      <ConversationBlock topic={!skillIndex ? t('topicSkills') : undefined} question={question} answer={answer}>
+      <ConversationBlock topic={t('topicSkills')} question={question} answer={answer}>
         <div className="space-y-3">
           {/* All groups start open, so each skill pops in */}
           {shown.map((category) => (

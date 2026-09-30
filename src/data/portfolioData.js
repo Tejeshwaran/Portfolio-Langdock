@@ -10,7 +10,8 @@
 // (names, dates, technologies) are written only once.
 // createPortfolioData('en' | 'de') at the bottom picks the right language.
 //
-// Rule: only put information here that is on the résumé.
+// Rule: only put information here that is on the CV (July 2026, public/cv/)
+// or visible in the projects themselves. No invented numbers or results.
 // ─────────────────────────────────────────────────────────────
 
 /** A text in two languages */
@@ -19,13 +20,26 @@ const L = (en, de) => ({ __bilingual: true, en, de })
 const personal = {
   name: 'Tejeshwaran Manoharan',
   firstName: 'Tejeshwaran',
-  tagline: 'Data Analytics · Frontend · AI',
+  // The professional direction, shown under the name
+  role: L('Data & AI-focused developer', 'Data- & KI-orientierter Entwickler'),
+  tagline: L('Data analytics · Web development · AI', 'Datenanalyse · Webentwicklung · KI'),
   location: L('Berlin, Germany', 'Berlin, Deutschland'),
   email: 'tejeshmanoharan@gmail.com',
+  // Shown on purpose (Tejeshwaran asked for it, 2026-09-30). To hide one,
+  // set it to '' — every place that shows it disappears automatically.
+  phone: '+49 163 4916554',
+  address: 'Am Kinderdorf 53, 14089 Berlin',
+  birthDate: L('16 August 2002', '16. August 2002'),
+  github: 'https://github.com/Tejeshwaran',
+  repository: 'https://github.com/Tejeshwaran/Portfolio-Langdock',
   // Add your LinkedIn profile URL here. While it is empty, the LinkedIn
   // links are hidden automatically everywhere on the site.
   linkedin: '',
-  portfolioUrl: 'https://tejeshwaran.github.io/portfolio-website/',
+  // The CV in the site's language (files in public/cv/)
+  cv: L('cv/Tejeshwaran-Manoharan-CV.pdf', 'cv/Tejeshwaran-Manoharan-Lebenslauf.pdf'),
+  // The application this site was made for
+  targetRole: 'AI Associate',
+  targetCompany: 'Langdock',
 }
 
 // In slide mode each degree is its own slide, with its own question and
@@ -77,26 +91,22 @@ const experience = [
     start: '07/2022',
     end: '08/2022',
     responsibilities: [
-      L('Front-end development', 'Frontend-Entwicklung'),
-      L('Building UI components', 'Entwicklung von UI-Komponenten'),
-      L('Working on web applications', 'Arbeit an Webanwendungen'),
-      L('Working with HubSpot CRM', 'Arbeit mit HubSpot CRM'),
-      L('Supporting marketing and sales processes', 'Unterstützung von Marketing- und Vertriebsprozessen'),
+      L('Front-end development: UI components and web applications', 'Frontend-Entwicklung: UI-Komponenten und Webanwendungen'),
+      L(
+        'Used HubSpot CRM to support marketing and sales processes',
+        'Nutzung von HubSpot CRM zur Unterstützung von Marketing- und Vertriebsprozessen',
+      ),
     ],
-    tags: [
-      'React / Frontend',
-      L('UI Components', 'UI-Komponenten'),
-      L('Web Applications', 'Webanwendungen'),
-      'HubSpot CRM',
-    ],
+    tags: [L('Front-end', 'Frontend'), L('UI components', 'UI-Komponenten'), L('Web applications', 'Webanwendungen'), 'HubSpot CRM'],
   },
 ]
 
-// Each project is shown as its own question → answer in the Projects
-// section. To add a project, add an object here — nothing else to change.
-//   type 'dashboard' → analytics-workspace preview + "Analyze project" panel
-//   type 'web'       → browser-window preview + "View project" link
-//   type 'app'       → desktop-app preview with the floating dictation pill
+// Each project is shown as its own question → answer (one slide each).
+// A project is told as a small case study:
+//   caseStudy.problem / approach / result  — three short sentences
+//   pipeline      — how it works, as steps (shown as a flow)
+//   capabilities  — the details behind the "Case study" button
+// Only facts from the CV or the project itself — no invented results.
 const projects = [
   {
     id: 'sales-dashboard',
@@ -104,61 +114,73 @@ const projects = [
     type: 'dashboard',
     question: L('What has he built?', 'Was hat er gebaut?'),
     answer: L(
-      'One of his projects is an interactive Tableau BI dashboard for analyzing sales and customer data. Open the analysis to see what it covers.',
-      'Eines seiner Projekte ist ein interaktives BI-Dashboard in Tableau zur Analyse von Vertriebs- und Kundendaten. Öffne die Analyse, um zu sehen, was es abdeckt.',
+      'His main data project is an interactive sales dashboard. With SQL and Python he cleaned and prepared sales and customer data, then built KPI views in Tableau for reports and business insights.',
+      'Sein wichtigstes Datenprojekt ist ein interaktives Sales-Dashboard. Mit SQL und Python hat er Vertriebs- und Kundendaten bereinigt und aufbereitet und daraus KPI-Ansichten in Tableau für Berichte und geschäftliche Erkenntnisse gebaut.',
     ),
     title: L('Sales Dashboard', 'Sales-Dashboard'),
-    subtitle: L('A BI dashboard for analyzing sales data.', 'Ein BI-Dashboard zur Analyse von Vertriebsdaten.'),
+    subtitle: L('Interactive BI dashboard for sales and customer data.', 'Interaktives BI-Dashboard für Vertriebs- und Kundendaten.'),
     tech: ['SQL', 'Python', 'Tableau'],
-    description: L(
-      'Developed an interactive Tableau BI dashboard for analyzing sales and customer data.',
-      'Entwicklung eines interaktiven BI-Dashboards in Tableau zur Analyse von Vertriebs- und Kundendaten.',
-    ),
+    caseStudy: {
+      problem: L(
+        'Sales and customer data had to be analysed in one place — for reports and business insights.',
+        'Vertriebs- und Kundendaten sollten an einem Ort analysiert werden — für Berichte und geschäftliche Erkenntnisse.',
+      ),
+      approach: L(
+        'Cleaned and processed the data with Python, then built an interactive BI dashboard in Tableau.',
+        'Daten mit Python bereinigt und verarbeitet, dann ein interaktives BI-Dashboard in Tableau gebaut.',
+      ),
+      result: L(
+        'KPI-based visualizations that make the numbers easy to read in reports.',
+        'KPI-basierte Visualisierungen, die die Zahlen in Berichten leicht lesbar machen.',
+      ),
+    },
+    pipeline: [
+      L('Sales & customer data', 'Vertriebs- & Kundendaten'),
+      L('Cleaning · Python', 'Bereinigung · Python'),
+      L('Dashboard · Tableau', 'Dashboard · Tableau'),
+      L('KPI reports', 'KPI-Berichte'),
+    ],
     capabilities: [
       L('Data cleaning and processing with Python', 'Datenbereinigung und -verarbeitung mit Python'),
       L('KPI-based visualizations', 'KPI-basierte Visualisierungen'),
-      'Reporting',
-      L('Business insights', 'Geschäftseinblicke'),
+      L('Reports', 'Berichte'),
+      L('Business insights', 'Geschäftliche Erkenntnisse'),
     ],
-    link: null,
-  },
-  {
-    id: 'portfolio-website',
-    number: '02',
-    type: 'web',
-    question: L('Has he built a real web application?', 'Hat er eine echte Webanwendung gebaut?'),
-    answer: L(
-      'Yes. He built and deployed a personal portfolio website using React.js, Tailwind CSS and Vite.',
-      'Ja. Er hat eine persönliche Portfolio-Website mit React.js, Tailwind CSS und Vite gebaut und veröffentlicht.',
-    ),
-    title: L('Personal Portfolio', 'Persönliches Portfolio'),
-    subtitle: L('A personal website, built and deployed.', 'Eine persönliche Website, gebaut und veröffentlicht.'),
-    tech: ['React JS', 'Tailwind CSS', 'Vite', 'GitHub'],
-    description: L(
-      'Built and deployed a personal portfolio website using React.js, Tailwind CSS and Vite.',
-      'Persönliche Portfolio-Website mit React.js, Tailwind CSS und Vite gebaut und veröffentlicht.',
-    ),
-    capabilities: [],
-    link: personal.portfolioUrl,
   },
   {
     id: 'pillo',
-    number: '03',
+    number: '02',
     type: 'app',
     question: L('What is he building right now?', 'Woran arbeitet er gerade?'),
     answer: L(
-      'He is building Pillo for Windows, together with Claude AI: a Windows version of the Pillo dictation app. You press a hotkey, speak, and your words are typed where your cursor is. Speech recognition runs on the device.',
-      'Er entwickelt gemeinsam mit Claude AI „Pillo für Windows“: eine Windows-Version der Diktier-App Pillo. Du drückst ein Tastenkürzel, sprichst, und deine Worte erscheinen dort, wo dein Cursor steht. Die Spracherkennung läuft direkt auf dem Gerät.',
+      'Right now he is building Pillo for Windows, together with Claude AI: press a hotkey, speak, and your words appear wherever your cursor is. The speech model runs directly on the device.',
+      'Gerade entwickelt er gemeinsam mit Claude AI „Pillo für Windows“: Tastenkürzel drücken, sprechen — und die Worte erscheinen dort, wo der Cursor steht. Das Sprachmodell läuft direkt auf dem Gerät.',
     ),
     title: L('Pillo for Windows', 'Pillo für Windows'),
     subtitle: L('On-device voice dictation for Windows.', 'Sprachdiktat für Windows, direkt auf dem Gerät.'),
     status: L('In development', 'In Entwicklung'),
     collaborator: 'Claude AI',
     tech: ['C#', '.NET 10', 'WPF', 'NAudio', 'sherpa-onnx', L('Parakeet speech model', 'Parakeet-Sprachmodell')],
-    description: L(
-      'A Windows port of Pillo, a macOS dictation app. Audio is captured on the PC and transcribed by an on-device speech model, then typed into the active app.',
-      'Eine Windows-Portierung von Pillo, einer Diktier-App für macOS. Der Ton wird am PC aufgenommen, von einem Sprachmodell direkt auf dem Gerät transkribiert und dann in die aktive App getippt.',
-    ),
+    caseStudy: {
+      problem: L(
+        'Typing everything by hand is slow. The goal: dictate into any Windows app, with speech recognition running on the PC itself.',
+        'Alles von Hand zu tippen ist langsam. Das Ziel: in jede Windows-App diktieren, mit Spracherkennung direkt auf dem PC.',
+      ),
+      approach: L(
+        'Porting the macOS dictation app Pillo to Windows, together with Claude AI: C# and WPF for the app, NAudio for the microphone, sherpa-onnx to run the Parakeet speech model locally.',
+        'Portierung der macOS-Diktier-App Pillo auf Windows, gemeinsam mit Claude AI: C# und WPF für die App, NAudio für das Mikrofon, sherpa-onnx für das lokale Parakeet-Sprachmodell.',
+      ),
+      result: L(
+        'In development. The app already runs on Windows — onboarding, design and the text pipeline are in place.',
+        'In Entwicklung. Die App läuft bereits unter Windows — Onboarding, Design und Text-Pipeline stehen.',
+      ),
+    },
+    pipeline: [
+      L('Hotkey', 'Tastenkürzel'),
+      L('Microphone · NAudio', 'Mikrofon · NAudio'),
+      L('Speech model on the device', 'Sprachmodell auf dem Gerät'),
+      L('Text at the cursor', 'Text am Cursor'),
+    ],
     capabilities: [
       L('Global hotkey to start dictation', 'Globales Tastenkürzel zum Starten des Diktats'),
       L('On-device speech recognition', 'Spracherkennung direkt auf dem Gerät'),
@@ -167,70 +189,85 @@ const projects = [
       L('Floating pill overlay', 'Schwebendes Pill-Overlay'),
       L('Transcript history', 'Verlauf der Transkripte'),
     ],
-    link: null,
   },
 ]
 
-// Skill levels are written exactly as on the résumé.
-// Items without a level simply show no badge.
-const VERY_GOOD = { key: 'very-good', label: L('Very good', 'Sehr gut') }
+// Skill levels are written exactly as on the CV ("Advanced" / "Good").
+// Items without a level show no badge. `learning: true` = learning it now,
+// shown differently so nothing looks bigger than it is.
+// `evidence` says where the group was actually used.
+// `aliases` help the chat recognise a skill in a question ("Does he know React?").
+const ADVANCED = { key: 'advanced', label: L('Advanced', 'Sehr gut') }
 const GOOD = { key: 'good', label: L('Good', 'Gut') }
 
 // In slide mode each skill group is its own slide (question / answer below).
 const skills = [
   {
     id: 'data',
-    question: L('What technologies does he work with?', 'Mit welchen Technologien arbeitet er?'),
+    question: L('What data tools does he work with?', 'Mit welchen Daten-Tools arbeitet er?'),
     answer: L(
-      'Let us start with data analytics: Python with Pandas, NumPy, Seaborn and pyplot, plus SQL, Tableau, R and Excel. Python, SQL and Tableau are rated "very good" on his résumé.',
-      'Beginnen wir mit der Datenanalyse: Python mit Pandas, NumPy, Seaborn und pyplot, dazu SQL, Tableau, R und Excel. Python, SQL und Tableau sind in seinem Lebenslauf mit „sehr gut“ bewertet.',
+      'Data is his core: Python with pandas, NumPy, Seaborn and pyplot, plus SQL and Tableau — all rated advanced on his CV. He used them in his Master\'s and in the Sales Dashboard.',
+      'Daten sind sein Kern: Python mit pandas, NumPy, Seaborn und pyplot, dazu SQL und Tableau — alle im Lebenslauf mit „sehr gut“ bewertet. Er hat sie im Master und im Sales-Dashboard eingesetzt.',
     ),
-    name: L('Data Analytics', 'Datenanalyse'),
+    name: L('Data & analytics', 'Daten & Analyse'),
     icon: 'chart', // mapped to a Lucide icon in SkillCard.jsx
+    evidence: L('Used in: Sales Dashboard · M.Sc. Data Analytics', 'Eingesetzt in: Sales-Dashboard · M.Sc. Data Analytics'),
     items: [
-      { name: 'Python', level: VERY_GOOD },
-      { name: 'Pandas' },
+      { name: 'Python', level: ADVANCED },
+      { name: 'pandas' },
       { name: 'NumPy' },
       { name: 'Seaborn' },
       { name: 'pyplot' },
-      { name: 'SQL', level: VERY_GOOD },
-      { name: 'Tableau', level: VERY_GOOD },
-      { name: 'R', level: GOOD },
+      { name: 'SQL', level: ADVANCED, aliases: [' sql', 'sql '] },
+      { name: 'Tableau', level: ADVANCED },
+      { name: 'MySQL', level: GOOD },
+      { name: 'R', level: GOOD, aliases: [' r ', ' r?', 'r language', 'r-'] },
       { name: 'Excel', level: GOOD },
     ],
   },
   {
     id: 'web',
-    question: L('What about web development?', 'Und in der Webentwicklung?'),
+    question: L('And web development?', 'Und Webentwicklung?'),
     answer: L(
-      'For the web he builds with React JS, HTML, CSS and Tailwind CSS — all rated "very good" — plus NodeJS and MongoDB.',
-      'Im Web arbeitet er mit React JS, HTML, CSS und Tailwind CSS — alle mit „sehr gut“ bewertet — sowie mit NodeJS und MongoDB.',
+      'For the web he works with React, HTML, CSS and Tailwind CSS — rated advanced on his CV — plus Node.js and MongoDB. He did front-end work in his internship, and this portfolio is built with React, Tailwind CSS and Vite.',
+      'Im Web arbeitet er mit React, HTML, CSS und Tailwind CSS — im Lebenslauf mit „sehr gut“ bewertet — sowie mit Node.js und MongoDB. Im Praktikum hat er im Frontend gearbeitet, und dieses Portfolio ist mit React, Tailwind CSS und Vite gebaut.',
     ),
-    name: L('Web Development', 'Webentwicklung'),
+    name: L('Web development', 'Webentwicklung'),
     icon: 'code',
+    evidence: L('Used in: HermitCrabs internship · this portfolio', 'Eingesetzt in: Praktikum bei HermitCrabs · diesem Portfolio'),
     items: [
-      { name: 'React JS', level: VERY_GOOD },
-      { name: 'HTML', level: VERY_GOOD },
-      { name: 'CSS', level: VERY_GOOD },
-      { name: 'Tailwind CSS', level: VERY_GOOD },
-      { name: 'NodeJS', level: GOOD },
-      { name: 'MongoDB', level: GOOD },
+      { name: 'React', level: ADVANCED, aliases: ['react'] },
+      { name: 'JavaScript', aliases: ['javascript', ' js '] },
+      { name: 'HTML', level: ADVANCED },
+      { name: 'CSS', level: ADVANCED, aliases: [' css'] },
+      { name: 'Tailwind CSS', level: ADVANCED, aliases: ['tailwind'] },
+      { name: 'Node.js', level: GOOD, aliases: ['node'] },
+      { name: 'MongoDB', level: GOOD, aliases: ['mongo'] },
+      { name: 'Vite' },
+      { name: 'Git & GitHub', aliases: [' git ', 'github'] },
+      { name: L('Figma · UI/UX', 'Figma · UI/UX'), learning: true, aliases: ['figma', 'ui/ux', 'ux design'] },
     ],
   },
   {
-    id: 'cloud',
-    question: L('And data science or cloud?', 'Und bei Data Science oder Cloud?'),
+    id: 'ai',
+    question: L('What about AI and machine learning?', 'Und KI und Machine Learning?'),
     answer: L(
-      'From his master\'s degree he brings machine learning, predictive analytics, data visualization and AWS.',
-      'Aus seinem Masterstudium bringt er Machine Learning, Predictive Analytics, Datenvisualisierung und AWS mit.',
+      'He studied machine learning and predictive analytics in his Master\'s, including big-data analysis on AWS. With Pillo he runs a speech model on a normal PC, and right now he is learning how LLM applications, AI agents and MCP work.',
+      'Im Master hat er Machine Learning und Predictive Analytics studiert, inklusive Big-Data-Analyse auf AWS. Mit Pillo lässt er ein Sprachmodell auf einem normalen PC laufen, und gerade lernt er, wie LLM-Anwendungen, KI-Agenten und MCP funktionieren.',
     ),
-    name: L('Data / Cloud', 'Daten / Cloud'),
-    icon: 'cloud',
+    name: L('AI & machine learning', 'KI & Machine Learning'),
+    icon: 'ai',
+    evidence: L('Studied in the M.Sc. · used in Pillo · learning now', 'Im M.Sc. studiert · in Pillo eingesetzt · lerne ich gerade'),
     items: [
-      { name: 'Machine Learning' },
-      { name: 'Predictive Analytics' },
-      { name: 'AWS' },
-      { name: L('Data Visualization', 'Datenvisualisierung') },
+      { name: 'Machine Learning', aliases: ['machine learning', ' ml '] },
+      { name: 'Predictive Analytics', aliases: ['predictive'] },
+      { name: L('Data Visualization', 'Datenvisualisierung'), aliases: ['visuali'] },
+      { name: 'AWS', aliases: ['aws', 'amazon web'] },
+      { name: L('On-device speech models', 'Sprachmodelle auf dem Gerät'), aliases: ['speech model', 'sprachmodell', 'onnx'] },
+      { name: L('C# / .NET (basic)', 'C# / .NET (Grundlagen)'), aliases: ['c#', '.net', 'dotnet'] },
+      { name: L('LLM applications', 'LLM-Anwendungen'), learning: true, aliases: ['llm'] },
+      { name: L('AI agents', 'KI-Agenten'), learning: true, aliases: ['agent'] },
+      { name: 'MCP', learning: true, aliases: [' mcp', 'model context'] },
     ],
   },
 ]
@@ -261,16 +298,29 @@ const languages = [
 const conversation = {
   // The ChatGPT-style home screen
   hero: {
-    heading: L('Tejeshwaran is a Web Developer and Data Analyst', 'Tejeshwaran ist Webentwickler und Datenanalyst'),
+    // The start page: who, what, where — readable in a few seconds
+    badge: L('Applying for AI Associate at Langdock', 'Bewerbung als AI Associate bei Langdock'),
+    heading: L("Hi, I'm Tejeshwaran.", 'Hallo, ich bin Tejeshwaran.'),
+    subheading: L(
+      'Data & AI-focused developer in Berlin. I analyse data, build web apps — and want to understand how AI really behaves.',
+      'Data- & KI-orientierter Entwickler in Berlin. Ich analysiere Daten, baue Web-Apps — und will verstehen, wie KI wirklich funktioniert.',
+    ),
+    // Four quick facts under the headline
+    highlights: ['M.Sc. Data Analytics', 'Python · SQL · Tableau', 'React', L('English C1 · German B2', 'Englisch C1 · Deutsch B2')],
     placeholder: L('Typing ❌ Just scrolling ✅', 'Tippen ❌ Einfach scrollen ✅'),
   },
   about: {
     question: L('Who is Tejeshwaran?', 'Wer ist Tejeshwaran?'),
     answer: L(
-      "Tejeshwaran Manoharan is a Data Analytics Master's graduate with a Bachelor's degree in Computer Applications. His background combines data analytics, machine learning, data visualization and web development.",
-      'Tejeshwaran Manoharan hat einen Master in Data Analytics und einen Bachelor in Computer Applications. Sein Profil verbindet Datenanalyse, Machine Learning, Datenvisualisierung und Webentwicklung.',
+      'Tejeshwaran Manoharan is a Data & AI-focused developer in Berlin. He holds a Master of Science in Data Analytics and a Bachelor of Computer Applications, analyses data with Python, SQL and Tableau, and builds web interfaces with React. Right now he is building Pillo, an on-device dictation app, together with Claude AI.',
+      'Tejeshwaran Manoharan ist ein Data- & KI-orientierter Entwickler in Berlin. Er hat einen Master of Science in Data Analytics und einen Bachelor of Computer Applications, analysiert Daten mit Python, SQL und Tableau und baut Web-Oberflächen mit React. Gerade entwickelt er gemeinsam mit Claude AI Pillo, eine Diktier-App, die direkt auf dem Gerät läuft.',
     ),
-    focusAreas: [L('Data Analytics', 'Datenanalyse'), 'Machine Learning', 'AI Engineer', L('Web Development', 'Webentwicklung')],
+    focusAreas: [
+      L('Data analytics', 'Datenanalyse'),
+      L('Web development', 'Webentwicklung'),
+      'Machine Learning',
+      L('LLM apps — learning', 'LLM-Apps — lerne ich'),
+    ],
   },
   education: {
     question: L('What is his educational background?', 'Welche Ausbildung hat er?'),
@@ -301,14 +351,43 @@ const conversation = {
     ),
   },
   why: {
-    sectionTitle: L('Why is this portfolio built differently?', 'Warum ist dieses Portfolio anders aufgebaut?'),
-    question: L('Why did he build this portfolio as an AI interface?', 'Warum hat er dieses Portfolio als KI-Oberfläche gebaut?'),
+    sectionTitle: L('Why Langdock?', 'Warum Langdock?'),
+    question: L('Why Langdock — and why the AI Associate program?', 'Warum Langdock — und warum das AI-Associate-Programm?'),
     answer: L(
-      'Because Tejeshwaran is interested in the intersection of data, software and AI. Instead of presenting his résumé as a static document, he wanted to turn the portfolio itself into an interactive AI experience.',
-      'Weil Tejeshwaran sich für die Schnittstelle von Daten, Software und KI interessiert. Statt seinen Lebenslauf als statisches Dokument zu zeigen, wollte er das Portfolio selbst zu einem interaktiven KI-Erlebnis machen.',
+      'Langdock brings the leading AI models into one secure platform for whole organisations — so the real questions about how AI behaves arrive in support. That is the part he wants to understand: why a model answers differently, where an agent breaks, why an integration fails. He brings an analyst\'s habit of finding out what is really happening, a web developer\'s feel for interfaces, and clear explanations in English and German.',
+      'Langdock bringt die führenden KI-Modelle in eine sichere Plattform für ganze Organisationen — deshalb landen die echten Fragen dazu, wie sich KI verhält, im Support. Genau das will er verstehen: warum ein Modell anders antwortet, wo ein Agent scheitert, warum eine Integration abbricht. Er bringt die Gewohnheit eines Analysten mit, herauszufinden, was wirklich passiert, das Gespür eines Webentwicklers für Oberflächen und klare Erklärungen auf Englisch und Deutsch.',
     ),
-    parts: [L('Data Analytics', 'Datenanalyse'), L('Frontend Development', 'Frontend-Entwicklung'), L('AI Interface', 'KI-Oberfläche')],
-    result: L('Interactive Portfolio', 'Interaktives Portfolio'),
+    // What the program asks for → where he has shown it (only real things)
+    fits: [
+      {
+        need: L('Curious how AI really works', 'Neugierig, wie KI wirklich funktioniert'),
+        proof: L(
+          'Studied machine learning; runs a speech model on a normal PC in Pillo; this chat\'s Think mode shows every step of an answer.',
+          'Hat Machine Learning studiert; lässt in Pillo ein Sprachmodell auf einem normalen PC laufen; der Nachdenk-Modus dieses Chats zeigt jeden Schritt einer Antwort.',
+        ),
+      },
+      {
+        need: L('Thinks in systems, loves analysis', 'Denkt in Systemen, analysiert gern'),
+        proof: L(
+          'M.Sc. Data Analytics; cleaned and analysed sales and customer data for a Tableau dashboard.',
+          'M.Sc. Data Analytics; hat Vertriebs- und Kundendaten für ein Tableau-Dashboard bereinigt und analysiert.',
+        ),
+      },
+      {
+        need: L('Experiments with new tools', 'Probiert neue Tools aus'),
+        proof: L(
+          'Builds Pillo together with Claude AI, and turned his CV into this interactive portfolio.',
+          'Entwickelt Pillo gemeinsam mit Claude AI und hat seinen Lebenslauf in dieses interaktive Portfolio verwandelt.',
+        ),
+      },
+      {
+        need: L('Explains clearly — German is a plus', 'Erklärt klar — Deutsch ist ein Plus'),
+        proof: L('English C1 and German B2 — this site answers in both.', 'Englisch C1 und Deutsch B2 — diese Website antwortet in beiden Sprachen.'),
+      },
+    ],
+    // The small equation under the cards
+    parts: [L('Data analysis', 'Datenanalyse'), L('Web development', 'Webentwicklung'), L('Curiosity about AI', 'Neugier auf KI')],
+    result: 'AI Associate',
   },
   // "Apart from IT": the table tennis slide (sections/BeyondWork.jsx)
   beyond: {
@@ -329,9 +408,11 @@ const conversation = {
   closing: {
     question: L('Is that everything?', 'Ist das alles?'),
     answer: L(
-      "That's everything for now. Thanks for reading — here is how to reach him.",
-      'Das ist erst einmal alles. Danke fürs Lesen — so erreichst du ihn.',
+      "That's the overview. If it sounds like a fit, let's talk — here is how to reach him.",
+      'Das ist der Überblick. Wenn es passt, lass uns reden — so erreichst du ihn.',
     ),
+    // The call to action on the contact card
+    cta: L("Let's build something useful.", 'Lass uns etwas Nützliches bauen.'),
   },
 }
 
@@ -375,43 +456,39 @@ const onboarding = {
 // below; the matching lives in src/utils/answerEngine.js.
 // ─────────────────────────────────────────────────────────────
 const askPortfolio = {
-  heading: L("Ask Tejeshwaran's Portfolio", 'Frag Tejeshwarans Portfolio'),
-  placeholder: L('Ask anything about my experience...', 'Frag mich etwas zu meiner Erfahrung …'),
-  greeting: L(
-    "Hi! I'm a small assistant that answers from Tejeshwaran's résumé. I run fully in your browser — no real LLM involved. Try a question below.",
-    'Hallo! Ich bin ein kleiner Assistent und antworte auf Basis von Tejeshwarans Lebenslauf. Ich laufe komplett in deinem Browser — ohne echtes LLM. Probier eine der Fragen unten aus.',
-  ),
-
-  // Typed into the home prompt bar by the header buttons
+  // Typed into the home prompt box by the contact and EN | DE buttons
   contactQuestion: L('How can I contact Tejeshwaran?', 'Wie kann ich Tejeshwaran kontaktieren?'),
   languageQuestions: {
     toGerman: 'Change the entire website to German',
     toEnglish: 'Change the language from German to English',
   },
 
-  // Topics in the "+" menu of the prompt bar. `icon` is mapped to a
-  // Lucide icon in PromptComposer.jsx.
+  // The chips on the start page: the main ways into the portfolio.
+  // Each asks the chat; the answer has a button to the matching part.
+  // `icon` is mapped to a Lucide icon in PromptComposer.jsx (TOPIC_ICONS).
+  suggestions: [
+    { label: L('Tell me about him', 'Erzähl mir von ihm'), icon: 'about', question: L('Tell me about Tejeshwaran.', 'Erzähl mir von Tejeshwaran.') },
+    { label: L('Show his projects', 'Zeig seine Projekte'), icon: 'projects', question: L('What projects has he built?', 'Welche Projekte hat er gebaut?') },
+    { label: L('Experience', 'Erfahrung'), icon: 'experience', question: L('What professional experience does he have?', 'Welche Berufserfahrung hat er?') },
+    { label: L('Why Langdock?', 'Warum Langdock?'), icon: 'why', question: L('Why is he interested in Langdock?', 'Warum interessiert er sich für Langdock?') },
+    { label: L('Skills', 'Kenntnisse'), icon: 'skills', question: L('What technologies does he use?', 'Welche Technologien nutzt er?') },
+    { label: L('Contact him', 'Kontakt'), icon: 'contact', question: L('How can I contact Tejeshwaran?', 'Wie kann ich Tejeshwaran kontaktieren?') },
+  ],
+
+  // Topics in the "+" menu of the prompt box
   topics: [
     { label: L('Education', 'Ausbildung'), icon: 'education', question: L('What did Tejeshwaran study?', 'Was hat Tejeshwaran studiert?') },
     { label: L('Experience', 'Erfahrung'), icon: 'experience', question: L('What professional experience does he have?', 'Welche Berufserfahrung hat er?') },
     { label: L('Projects', 'Projekte'), icon: 'projects', question: L('What projects has he built?', 'Welche Projekte hat er gebaut?') },
     { label: 'Pillo', icon: 'pillo', question: L('Tell me about Pillo.', 'Erzähl mir von Pillo.') },
-    { label: L('Skills', 'Kenntnisse'), icon: 'skills', question: L('What are his strongest technical skills?', 'Was sind seine größten technischen Stärken?') },
-    { label: L('Languages', 'Sprachen'), icon: 'languages', question: L('What languages does he speak?', 'Welche Sprachen spricht er?') },
+    { label: L('Skills', 'Kenntnisse'), icon: 'skills', question: L('What technologies does he use?', 'Welche Technologien nutzt er?') },
+    { label: L('Why Langdock?', 'Warum Langdock?'), icon: 'why', question: L('Why is he interested in Langdock?', 'Warum interessiert er sich für Langdock?') },
+    { label: 'CV', icon: 'cv', question: L('Can I download his CV?', 'Kann ich seinen Lebenslauf herunterladen?') },
     { label: L('Contact', 'Kontakt'), icon: 'contact', question: L('How can I contact Tejeshwaran?', 'Wie kann ich Tejeshwaran kontaktieren?') },
   ],
-  suggestions: [
-    L('What did Tejeshwaran study?', 'Was hat Tejeshwaran studiert?'),
-    L('What are his strongest technical skills?', 'Was sind seine größten technischen Stärken?'),
-    L('Tell me about the Sales Dashboard.', 'Erzähl mir vom Sales-Dashboard.'),
-    L('What frontend technologies does he know?', 'Welche Frontend-Technologien kennt er?'),
-    L('What languages does he speak?', 'Welche Sprachen spricht er?'),
-    L('Where can I see his portfolio?', 'Wo kann ich sein Portfolio sehen?'),
-    L('What is he building right now?', 'Woran arbeitet er gerade?'),
-  ],
   fallback: L(
-    "I don't have that in my résumé data. Try asking about his education, experience, projects, skills or languages.",
-    'Dazu habe ich nichts in seinem Lebenslauf. Frag mich nach seiner Ausbildung, Erfahrung, seinen Projekten, Kenntnissen oder Sprachen.',
+    'I only answer from his CV and projects, and that is not in there. Try his projects, skills, experience or education — or ask why Langdock.',
+    'Ich antworte nur auf Basis seines Lebenslaufs und seiner Projekte, und dazu steht dort nichts. Frag nach Projekten, Kenntnissen, Erfahrung oder Ausbildung — oder warum Langdock.',
   ),
 }
 
@@ -437,6 +514,10 @@ const lowerFirst = (text) => text.charAt(0).toLowerCase() + text.slice(1)
  * English or German. The FIRST response with a keyword inside the question
  * wins, so the order matters (specific topics come first).
  * Tip: put spaces around a keyword (' hi ') to match only the whole word.
+ *
+ * `link` is an optional button under the answer:
+ *   { label, slide } → fades to that part of the portfolio
+ *   { label, href }  → opens a page or file (download: true for the CV)
  */
 function buildResponses(data, language) {
   const de = language === 'de'
@@ -445,49 +526,48 @@ function buildResponses(data, language) {
   const job = jobs[0]
   const dashboard = work.find((project) => project.id === 'sales-dashboard')
   const pillo = work.find((project) => project.id === 'pillo')
-  const listSkills = (groupId) =>
-    skillGroups
-      .find((group) => group.id === groupId)
-      .items.map((item) => item.name)
-      .join(', ')
-  const veryGoodSkills = skillGroups
+  const advancedSkills = skillGroups
     .flatMap((group) => group.items)
-    .filter((item) => item.level?.key === 'very-good')
+    .filter((item) => item.level?.key === 'advanced')
     .map((item) => item.name)
     .join(', ')
-
-  // Contact cards shown under an answer. `icon` is mapped in ContactDetails.jsx.
-  const contactCards = [
-    { id: 'email', label: de ? 'E-Mail' : 'Email', value: me.email, href: `mailto:${me.email}`, icon: 'email' },
-    { id: 'location', label: de ? 'Standort' : 'Location', value: me.location, icon: 'location' },
-    {
-      id: 'linkedin',
-      label: 'LinkedIn',
-      value: me.linkedin.replace(/^https?:\/\/(www\.)?/, ''),
-      href: me.linkedin,
-      icon: 'linkedin',
-    },
-  ].filter((card) => card.value)
+  const learningSkills = skillGroups
+    .flatMap((group) => group.items)
+    .filter((item) => item.learning)
+    .map((item) => item.name)
+    .join(', ')
+  const open = (slide) => ({ label: de ? 'Diesen Teil öffnen' : 'Open this part', slide })
 
   return [
     {
-      topic: 'portfolio',
-      keywords: ['portfolio', 'website', 'webseite', 'site', 'github pages', 'deployed', 'veröffentlicht'],
+      topic: 'cv',
+      keywords: [' cv', 'resume', 'résumé', 'lebenslauf', 'download'],
       answer: de
-        ? `Seine persönliche Portfolio-Website findest du unter ${me.portfolioUrl}. Er hat sie mit React.js, Tailwind CSS und Vite gebaut und veröffentlicht.`
-        : `You can see his personal portfolio website at ${me.portfolioUrl}. He built and deployed it with React.js, Tailwind CSS and Vite.`,
-      // Optional button shown under the answer
-      link: { label: de ? 'Portfolio öffnen' : 'Open portfolio', href: me.portfolioUrl },
+        ? 'Hier ist sein Lebenslauf als PDF — mit allen Details zu Ausbildung, Praktikum, Projekten und Kenntnissen.'
+        : 'Here is his CV as a PDF — with all details on his education, internship, projects and skills.',
+      link: { label: de ? 'Lebenslauf herunterladen (PDF)' : 'Download CV (PDF)', href: me.cv, download: true },
+    },
+    {
+      topic: 'portfolio',
+      keywords: ['portfolio', 'this website', 'this site', 'webseite', 'website', 'github', 'source code', 'quellcode', ' repo'],
+      answer: de
+        ? 'Du bist gerade darin: Dieses Portfolio ist mit React, Tailwind CSS und Vite gebaut. Der Chat antwortet nur aus seinen Lebenslaufdaten — ohne externe KI-API. Der Code liegt auf GitHub.'
+        : 'You are looking at it: this portfolio is built with React, Tailwind CSS and Vite. The chat answers only from his CV data — no external AI API. The code is on GitHub.',
+      link: { label: de ? 'Auf GitHub öffnen' : 'Open on GitHub', href: me.repository },
+    },
+    {
+      topic: 'langdock',
+      keywords: ['langdock', 'associate', 'motivation', 'motivier', 'why him', 'warum er', 'hire him', 'einstellen', 'a fit', 'passt'],
+      answer: data.conversation.why.answer,
+      link: open('why'),
     },
     {
       topic: 'pillo',
       keywords: [
-        'pillo', 'dictation', 'diktier', 'voice app', 'speech', 'sprachmodell', 'c#', '.net', 'wpf', 'windows',
-        'claude', 'right now', 'working on', 'currently', 'gerade', 'woran', 'aktuell',
+        'pillo', 'dictation', 'diktier', 'voice app', 'right now', 'working on', 'currently', 'gerade', 'woran', 'aktuell',
       ],
-      answer: de
-        ? `${pillo.title} ist ${lowerFirst(pillo.description)} Er entwickelt es gemeinsam mit ${pillo.collaborator} und nutzt ${pillo.tech.join(', ')}. Status: ${pillo.status}.`
-        : `${pillo.title} is ${lowerFirst(pillo.description)} He builds it together with ${pillo.collaborator}, using ${pillo.tech.join(', ')}. Status: ${lowerFirst(pillo.status)}.`,
+      answer: `${pillo.answer} ${pillo.caseStudy.result}`,
+      link: open('projects-2'),
     },
     {
       topic: 'hobbies',
@@ -496,20 +576,27 @@ function buildResponses(data, language) {
         'outside of', 'freizeit', 'tischtennis', 'abseits', 'neben der',
       ],
       answer: data.conversation.beyond.answer,
+      link: open('beyond'),
     },
     {
       topic: 'dashboard',
-      keywords: ['dashboard', 'sales', 'tableau', 'bi ', 'vertrieb'],
+      keywords: ['dashboard', 'sales', 'tableau', ' bi ', 'vertrieb', 'kpi'],
+      answer: `${dashboard.answer} ${de ? 'Technologien' : 'Built with'}: ${dashboard.tech.join(', ')}.`,
+      link: open('projects'),
+    },
+    {
+      topic: 'ai',
+      keywords: [' ai ', ' ki ', 'llm', 'agent', ' mcp', 'machine learning', 'artificial', 'künstlich', ' model'],
       answer: de
-        ? `${dashboard.description} Es umfasst: ${dashboard.capabilities.join(', ')}. Technologien: ${dashboard.tech.join(', ')}.`
-        : `The ${dashboard.title} is ${lowerFirst(dashboard.description)} It includes ${dashboard.capabilities.join(', ').toLowerCase()}. Built with ${dashboard.tech.join(', ')}.`,
+        ? `Im Master hat er Machine Learning und Predictive Analytics studiert. In Pillo arbeitet er mit einem Sprachmodell, das direkt auf dem Gerät läuft, und gerade lernt er: ${learningSkills}. In einem KI-Job hat er noch nicht gearbeitet — genau dafür ist das AI-Associate-Programm da.`
+        : `He studied machine learning and predictive analytics in his Master's. In Pillo he works with a speech model that runs on the device, and he is learning ${learningSkills}. He has not worked in an AI job yet — that is exactly what the AI Associate program is for.`,
+      link: open('skills-3'),
     },
     {
       topic: 'frontend',
-      keywords: ['frontend', 'front-end', 'front end', 'react', 'web', 'tailwind', 'html', 'css', 'javascript'],
-      answer: de
-        ? `Für Frontend und Webentwicklung arbeitet er mit ${listSkills('web')}. React JS, HTML, CSS und Tailwind CSS sind in seinem Lebenslauf mit „sehr gut“ bewertet.`
-        : `For frontend and web development he works with ${listSkills('web')}. React JS, HTML, CSS and Tailwind CSS are rated "very good" on his résumé.`,
+      keywords: ['frontend', 'front-end', 'front end', 'web dev', 'webentwicklung', 'user interface', 'oberfläche'],
+      answer: `${skillGroups.find((group) => group.id === 'web').answer}`,
+      link: open('skills-2'),
     },
     {
       topic: 'languages',
@@ -521,6 +608,7 @@ function buildResponses(data, language) {
             : `${lang.name} (${lang.level}, ${lowerFirst(lang.description)})`,
         )
         .join(', ')}.`,
+      link: open('languages'),
     },
     {
       topic: 'education',
@@ -531,59 +619,114 @@ function buildResponses(data, language) {
       answer: de
         ? `Er hat einen ${masters.degree} abgeschlossen (${masters.school}, ${masters.start} – ${masters.end}, Note ${masters.grade}) und davor einen ${bachelors.degree} (${bachelors.school}, ${bachelors.start} – ${bachelors.end}, Note ${bachelors.grade}).`
         : `He completed a ${masters.degree} at ${masters.school} (${masters.start} – ${masters.end}, grade ${masters.grade}), and before that a ${bachelors.degree} at ${bachelors.school} (${bachelors.start} – ${bachelors.end}, grade ${bachelors.grade}).`,
+      link: open('education'),
     },
     {
       topic: 'experience',
       keywords: ['experience', 'erfahrung', 'work', 'arbeit', 'job', 'intern', 'praktik', 'beruf', 'hermitcrabs', 'hubspot', 'crm', 'employ'],
       answer: de
-        ? `Er war ${job.role} bei ${job.company} (${job.start} – ${job.end}). Seine Aufgaben: ${job.responsibilities.join(', ')}.`
-        : `He was a ${job.role} at ${job.company} (${job.start} – ${job.end}). His work covered ${job.responsibilities.join(', ').toLowerCase()}.`,
+        ? `Er war ${job.role} bei ${job.company} (${job.start} – ${job.end}): ${job.responsibilities.join('; ')}.`
+        : `He was a ${job.role} at ${job.company} (${job.start} – ${job.end}): ${job.responsibilities.map(lowerFirst).join('; ')}.`,
+      link: open('experience'),
     },
     {
       topic: 'projects',
       keywords: ['project', 'projekt', 'built', 'build', 'gebaut', 'entwickelt', 'made', 'create'],
       answer: de
-        ? `Er hat ${work.length} Projekte: ${work.map((project) => `${project.title} (${project.tech.join(', ')})`).join('; ')}.`
-        : `He has ${work.length} projects: ${work.map((project) => `${project.title} (${project.tech.join(', ')})`).join('; ')}.`,
+        ? `Er zeigt ${work.length} Projekte: das ${dashboard.title} (${dashboard.tech.join(', ')}) und ${pillo.title}, das er gerade gemeinsam mit ${pillo.collaborator} entwickelt (C#, .NET, Sprachmodell auf dem Gerät).`
+        : `He shows ${work.length} projects: the ${dashboard.title} (${dashboard.tech.join(', ')}) and ${pillo.title}, which he is building right now together with ${pillo.collaborator} (C#, .NET, an on-device speech model).`,
+      link: open('projects'),
     },
     {
       topic: 'skills',
       keywords: [
-        'skill', 'kenntnis', 'technolog', 'technisch', 'stack', 'tool', 'python', 'sql', 'strong', 'stärke',
-        'fähigkeit', 'good at', 'data', 'daten', 'machine learning', 'aws',
+        'skill', 'kenntnis', 'technolog', 'technisch', 'stack', 'tool', 'strong', 'stärke', 'fähigkeit', 'good at',
+        'data', 'daten',
       ],
       answer: de
-        ? `Seine größten Stärken sind Datenanalyse, Visualisierung und Frontend-Entwicklung. Mit „sehr gut“ bewertet: ${veryGoodSkills}. Außerdem: ${listSkills('cloud')}.`
-        : `His strongest areas are data analytics, visualization and frontend development. Rated "very good": ${veryGoodSkills}. Also: ${listSkills('cloud')}.`,
+        ? `Seine Stärken sind Datenanalyse und Webentwicklung. Im Lebenslauf mit „sehr gut“ bewertet: ${advancedSkills}. Gerade lernt er: ${learningSkills}.`
+        : `His strengths are data analytics and web development. Rated "advanced" on his CV: ${advancedSkills}. Learning now: ${learningSkills}.`,
+      link: open('skills'),
     },
     {
       topic: 'contact',
       keywords: [
-        'contact', 'kontakt', 'email', 'e-mail', 'mail', 'reach', 'erreich', 'hire', 'linkedin', 'where', ' wo ',
-        'location', 'standort', 'berlin',
+        'contact', 'kontakt', 'email', 'e-mail', 'mail', 'phone', 'telefon', 'call', 'anruf', 'reach', 'erreich',
+        'hire', 'linkedin', 'where', ' wo ', 'location', 'standort', 'berlin', 'address', 'adresse',
       ],
       answer: de
-        ? `Du erreichst ${me.firstName} per E-Mail unter ${me.email}. Er ist in ${me.location} ansässig.`
-        : `You can reach ${me.firstName} by email at ${me.email}. He is based in ${me.location}.`,
-      // Shown under the answer as contact cards (email, location …)
-      details: contactCards,
+        ? `Du erreichst ${me.firstName} per E-Mail unter ${me.email}${me.phone ? ` oder telefonisch unter ${me.phone}` : ''}. Er wohnt in Berlin.`
+        : `You can reach ${me.firstName} by email at ${me.email}${me.phone ? ` or by phone at ${me.phone}` : ''}. He lives in Berlin.`,
+      // Shown under the answer as contact cards
+      details: buildContactDetails(me, de),
     },
     {
       topic: 'about',
       keywords: [
-        'who ', 'wer ', 'about him', 'über ihn', 'tell me about', 'summary', 'zusammenfassung', 'introduce',
-        'vorstell', 'background', 'tejeshwaran',
+        'who ', 'wer ', 'about him', 'über ihn', 'tell me about', 'erzähl mir von', 'summary', 'zusammenfassung',
+        'introduce', 'vorstell', 'background', 'tejeshwaran',
       ],
       answer: data.conversation.about.answer,
+      link: open('about'),
     },
     {
       topic: 'greeting',
       keywords: [' hi ', ' hello ', ' hey ', ' hallo ', ' moin ', ' servus ', ' thanks ', ' thank you ', ' danke '],
       answer: de
-        ? 'Hallo! Frag mich nach seiner Ausbildung, Erfahrung, seinen Projekten, Kenntnissen oder Sprachen — oder scroll nach unten, um das ganze Gespräch zu lesen.'
-        : 'Hello! Ask me about his education, experience, projects, skills or languages — or scroll down to read the full conversation.',
+        ? 'Hallo! Frag mich nach seinen Projekten, Kenntnissen, seiner Erfahrung — oder warum Langdock. Oder scroll einfach weiter.'
+        : 'Hello! Ask me about his projects, skills, experience — or why Langdock. Or just keep scrolling.',
     },
   ]
+}
+
+/**
+ * The contact cards (under the contact answer and on the contact card).
+ * Empty values are left out automatically. `icon` is mapped in ContactDetails.jsx.
+ */
+export function buildContactDetails(me, de) {
+  return [
+    { id: 'email', label: de ? 'E-Mail' : 'Email', value: me.email, href: `mailto:${me.email}`, icon: 'email' },
+    { id: 'phone', label: de ? 'Telefon' : 'Phone', value: me.phone, href: `tel:${me.phone.replace(/\s/g, '')}`, icon: 'phone' },
+    { id: 'address', label: de ? 'Adresse' : 'Address', value: me.address, icon: 'location' },
+    { id: 'birth', label: de ? 'Geburtsdatum' : 'Date of birth', value: me.birthDate, icon: 'birth' },
+    { id: 'github', label: 'GitHub', value: me.github.replace(/^https?:\/\//, ''), href: me.github, icon: 'github' },
+    { id: 'linkedin', label: 'LinkedIn', value: me.linkedin.replace(/^https?:\/\/(www\.)?/, ''), href: me.linkedin, icon: 'linkedin' },
+  ].filter((card) => card.value)
+}
+
+/**
+ * "Does he know React?" — one short, honest answer per skill, built from
+ * the skill groups. answerEngine.js uses these when a question asks about
+ * a skill by name (see KNOW_WORDS there).
+ */
+function buildSkillAnswers(skillGroups, language) {
+  const de = language === 'de'
+  return skillGroups.flatMap((group) =>
+    group.items.map((item) => {
+      let answer
+      if (item.learning) {
+        answer = de
+          ? `${item.name} lernt er gerade — Berufserfahrung damit hat er noch nicht.`
+          : `He is learning ${item.name} right now — no professional experience with it yet.`
+      } else if (item.level) {
+        answer = de
+          ? `Ja. ${item.name} ist in seinem Lebenslauf mit „${item.level.label.toLowerCase()}“ bewertet. ${group.evidence}.`
+          : `Yes. ${item.name} is rated "${item.level.label.toLowerCase()}" on his CV. ${group.evidence}.`
+      } else {
+        answer = de
+          ? `Ja, ${item.name} gehört zu seinem Bereich „${group.name}“. ${group.evidence}.`
+          : `Yes, ${item.name} is part of his ${lowerFirst(group.name)} work. ${group.evidence}.`
+      }
+      const names = item.aliases || [item.name.toLowerCase()]
+      return { names, answer, name: item.name, link: { label: de ? 'Diesen Teil öffnen' : 'Open this part', slide: groupSlideIdOf(group, skillGroups) } }
+    }),
+  )
+}
+
+/** Slide id of a skill group: first → 'skills', second → 'skills-2' … */
+function groupSlideIdOf(group, skillGroups) {
+  const index = skillGroups.indexOf(group)
+  return index === 0 ? 'skills' : `skills-${index + 1}`
 }
 
 /**
@@ -596,5 +739,6 @@ export function createPortfolioData(language) {
     language,
   )
   data.askPortfolio.responses = buildResponses(data, language)
+  data.askPortfolio.skillAnswers = buildSkillAnswers(data.skills, language)
   return data
 }

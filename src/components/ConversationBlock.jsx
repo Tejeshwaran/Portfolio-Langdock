@@ -5,7 +5,6 @@ import MessageActions from './MessageActions'
 import ThinkingDots from './ThinkingDots'
 import TypewriterText from './TypewriterText'
 import { RevealContext } from './PopIn'
-import useScrollFade from '../hooks/useScrollFade'
 import { SlideActiveContext } from './SlideDeck'
 
 // The life of one question → answer exchange, in order.
@@ -18,10 +17,11 @@ const STAGE = {
 }
 
 // Timings in milliseconds. Kept short on purpose: it should feel like
-// the AI responds, but never make the visitor wait.
-const QUESTION_TO_THINKING = 300
-const THINKING_DURATION = 450
-const TYPING_SPEED = 7 // ms per character
+// the AI responds, but a recruiter should never wait for it
+// (a 300-character answer is fully typed in about 1.2 seconds).
+const QUESTION_TO_THINKING = 200
+const THINKING_DURATION = 300
+const TYPING_SPEED = 4 // ms per character
 
 /**
  * ConversationBlock — a reusable "user asks, AI answers" unit.
@@ -34,17 +34,10 @@ const TYPING_SPEED = 7 // ms per character
  *  - topic             optional small label above the block (helps scanning)
  *  - startImmediately  start without waiting to be scrolled into view
  *
- * Two kinds of scroll animation happen here:
- *
- *  1. Scroll-TRIGGERED sequence. `useInView` (IntersectionObserver) notices
- *     when the block's top passes 80% of the screen height, and timers walk
- *     through the stages above. `once: true` = it plays only the first time.
- *
- *  2. Scroll-LINKED motion (hooks/useScrollFade.js). The block rises a
- *     little as it comes in and — with the 'fade' scroll effect — fades out
- *     near the top of the screen while the next block comes in. It follows
- *     the scroll position directly, in both directions, without
- *     re-rendering React.
+ * The sequence starts when the block's slide is the visible one
+ * (SlideActiveContext) and the block is on screen (`useInView`,
+ * IntersectionObserver); timers then walk through the stages above.
+ * With "reduce motion" switched on, it skips straight to the finished state.
  *
  * After the answer is typed, RevealContext switches to `true`, and every
  * <PopIn> inside the cards pops as soon as it is on screen.
@@ -63,8 +56,6 @@ export default function ConversationBlock({
   const [stage, setStage] = useState(STAGE.IDLE)
   // Goes up by one each time "regenerate" is pressed
   const [runId, setRunId] = useState(0)
-
-  const scrollStyle = useScrollFade(blockRef)
 
   // In slide mode, wait until this block's slide is the visible one
   const isSlideActive = useContext(SlideActiveContext)
@@ -105,11 +96,12 @@ export default function ConversationBlock({
   const showCards = stage === STAGE.DONE
 
   return (
-    <motion.div ref={blockRef} className="space-y-5" style={scrollStyle}>
+    <motion.div ref={blockRef} className="space-y-5">
+      {/* The topic is the slide's heading (h2), so screen readers get a clear outline */}
       {topic && (
-        <div className="flex items-center gap-3" aria-hidden="true">
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">{topic}</span>
-          <span className="h-px flex-1 bg-line" />
+        <div className="flex items-center gap-3">
+          <h2 className="font-mono text-[11px] font-normal uppercase tracking-[0.14em] text-muted">{topic}</h2>
+          <span className="h-px flex-1 bg-line" aria-hidden="true" />
         </div>
       )}
 

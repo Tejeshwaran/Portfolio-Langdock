@@ -13,8 +13,11 @@ import {
   Mail,
   Mic,
   Plus,
+  Sparkles,
+  UserRound,
 } from 'lucide-react'
 import AssistantMark from './AssistantMark'
+import useDismiss from '../hooks/useDismiss'
 import useSpeechRecognition from '../hooks/useSpeechRecognition'
 import { useLanguage } from '../i18n/LanguageContext'
 import { requestAsk } from '../utils/askEvents'
@@ -28,6 +31,9 @@ export const TOPIC_ICONS = {
   languages: Languages,
   contact: Mail,
   pillo: AudioLines,
+  about: UserRound,
+  why: Sparkles,
+  cv: FileText,
 }
 
 /** Four small bars that bounce while voice mode is listening */
@@ -159,21 +165,9 @@ const PromptComposer = forwardRef(function PromptComposer(
     },
   })
 
-  // Close an open menu on outside click or Escape
-  useEffect(() => {
-    if (!openMenu) return
-    const menuElement = { topics: topicsRef, plugins: pluginsRef, mode: modeRef }[openMenu].current
-    const handlePointerDown = (event) => {
-      if (!menuElement?.contains(event.target)) setOpenMenu(null)
-    }
-    const handleKeyDown = (event) => event.key === 'Escape' && setOpenMenu(null)
-    document.addEventListener('pointerdown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [openMenu])
+  // Close the open menu on outside click or Escape
+  const openMenuRef = { topics: topicsRef, plugins: pluginsRef, mode: modeRef }[openMenu] || topicsRef
+  useDismiss(openMenuRef, Boolean(openMenu), () => setOpenMenu(null))
 
   function toggleMenu(name) {
     setOpenMenu((current) => (current === name ? null : name))

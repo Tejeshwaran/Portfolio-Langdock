@@ -24,14 +24,15 @@ export function groupSlideId(group, index) {
 }
 
 /** The sidebar's section list. `slides` = the slides this item stands for. */
+// (The projects have their own list in the sidebar, under "Projects".)
 export const SECTION_ITEMS = [
   { labelKey: 'topicAbout', icon: UserRound, slides: ['about'] },
-  { labelKey: 'topicEducation', icon: GraduationCap, slides: ['education', 'education-2'] },
   { labelKey: 'topicExperience', icon: Briefcase, slides: ['experience'] },
   { labelKey: 'topicSkills', icon: Layers, slides: ['skills', 'skills-2', 'skills-3'] },
+  { labelKey: 'topicEducation', icon: GraduationCap, slides: ['education', 'education-2'] },
+  { labelKey: 'topicWhy', icon: Sparkles, slides: ['why'] },
   { labelKey: 'topicLanguages', icon: Languages, slides: ['languages'] },
   { labelKey: 'topicBeyond', icon: CircleDot, slides: ['beyond'] },
-  { labelKey: 'topicWhy', icon: Sparkles, slides: ['why'] },
   { labelKey: 'topicContact', icon: Mail, slides: ['contact'] },
 ]
 
