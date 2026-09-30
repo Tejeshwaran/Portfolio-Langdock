@@ -3,7 +3,7 @@ import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'fram
 import { useSlideDeck } from './SlideDeck'
 
 /**
- * A thin blue line at the very top that shows how far you are.
+ * A thin accent line at the very top that shows how far you are.
  * It replaces the hidden scrollbar as the "where am I?" indicator.
  *
  *  - slide mode:     active slide ÷ number of slides

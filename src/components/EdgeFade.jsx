@@ -3,7 +3,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion
 import { isFadeScroll } from '../config/scrollEffect'
 
 /**
- * EdgeFade — two soft black gradients fixed to the screen edges: one just
+ * EdgeFade — two soft gradients (page colour) fixed to the screen edges: one just
  * under the header, one at the bottom. Text that scrolls into them
  * dissolves instead of being cut off by a hard line.
  *

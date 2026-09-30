@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import AIHeader from './components/AIHeader'
+import AppShell from './components/AppShell'
 import EdgeFade from './components/EdgeFade'
 import FloatingNav from './components/FloatingNav'
+import { HomeChatProvider } from './components/HomeChat'
 import ScrollProgress from './components/ScrollProgress'
-import { SlideDeckProvider, SlideStage } from './components/SlideDeck'
+import { SlideDeckProvider } from './components/SlideDeck'
 import { isSlideMode } from './config/scrollEffect'
 import { shouldShowOnboarding } from './config/onboarding'
 import Onboarding from './onboarding/Onboarding'
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
+import { ThemeProvider } from './theme/ThemeContext'
 import Hero from './sections/Hero'
 import About from './sections/About'
 import Education from './sections/Education'
@@ -25,9 +28,10 @@ import Footer from './sections/Footer'
  * pair that plays when it appears (see ConversationBlock.jsx).
  *
  * Two ways to show it (config/scrollEffect.js):
- *  - slide mode: every part is a full-screen slide; scrolling fades from
- *    one slide to the next (SlideDeck.jsx). Each degree, project and skill
- *    group gets its own slide.
+ *  - slide mode (default): an AI-workspace layout (AppShell.jsx) — sidebar,
+ *    top bar and a chat area where every part is a slide; scrolling fades
+ *    from one slide to the next (SlideDeck.jsx). Each degree, project and
+ *    skill group gets its own slide.
  *  - scrolling page: all parts below each other, like a normal website.
  *
  * Before the portfolio, every visit starts with a short intro
@@ -70,7 +74,8 @@ function Page() {
     { id: 'contact', element: <Footer /> },
   ]
 
-  const page = (
+  // The older "normal scrolling website" version (?scroll=classic or fade)
+  const scrollingPage = (
     <>
       <a
         href="#main"
@@ -82,25 +87,19 @@ function Page() {
       <ScrollProgress />
       <AIHeader />
 
-      {isSlideMode ? (
-        <main id="main" tabIndex={-1} className="focus:outline-none">
-          <SlideStage />
-        </main>
-      ) : (
-        // tabIndex -1 lets "Skip to content" move focus here
-        <main id="main" tabIndex={-1} className="mx-auto max-w-3xl px-4 focus:outline-none sm:px-6">
-          <Hero />
-          <About />
-          <Education />
-          <Experience />
-          <Projects />
-          <Skills />
-          <Languages />
-          <BeyondWork />
-          <WhyLangdock />
-          <Footer />
-        </main>
-      )}
+      {/* tabIndex -1 lets "Skip to content" move focus here */}
+      <main id="main" tabIndex={-1} className="mx-auto max-w-3xl px-4 focus:outline-none sm:px-6">
+        <Hero />
+        <About />
+        <Education />
+        <Experience />
+        <Projects />
+        <Skills />
+        <Languages />
+        <BeyondWork />
+        <WhyLangdock />
+        <Footer />
+      </main>
 
       <EdgeFade />
       <FloatingNav />
@@ -117,7 +116,16 @@ function Page() {
           <Onboarding key="intro" onFinish={finishIntro} />
         ) : (
           <motion.div key="portfolio" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
-            {isSlideMode ? <SlideDeckProvider slides={slides}>{page}</SlideDeckProvider> : page}
+            {/* One shared home chat for the home screen, sidebar and top bar */}
+            <HomeChatProvider>
+              {isSlideMode ? (
+                <SlideDeckProvider slides={slides}>
+                  <AppShell />
+                </SlideDeckProvider>
+              ) : (
+                scrollingPage
+              )}
+            </HomeChatProvider>
           </motion.div>
         )}
       </AnimatePresence>
@@ -125,11 +133,16 @@ function Page() {
   )
 }
 
-/** LanguageProvider gives every component the current language (English / German). */
+/**
+ * ThemeProvider: dark / light look. LanguageProvider: English / German.
+ * Both are available to every component below them.
+ */
 export default function App() {
   return (
-    <LanguageProvider>
-      <Page />
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <Page />
+      </LanguageProvider>
+    </ThemeProvider>
   )
 }

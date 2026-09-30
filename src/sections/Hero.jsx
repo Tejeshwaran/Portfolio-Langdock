@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ArrowDown, SquarePen } from 'lucide-react'
+import { ArrowDown } from 'lucide-react'
 import ChatThread from '../components/ChatThread'
 import PromptComposer from '../components/PromptComposer'
-import usePortfolioChat from '../hooks/usePortfolioChat'
+import { useHomeChat } from '../components/HomeChat'
 import { onAskRequest, onLanguageSwitch } from '../utils/askEvents'
 import useScrollFade from '../hooks/useScrollFade'
 import { useSlideDeck } from '../components/SlideDeck'
@@ -39,19 +39,6 @@ function scrollToTop(reduceMotion) {
   })
 }
 
-/** true on phone-sized screens (narrower than Tailwind's `sm`, 640px) */
-function useIsPhone() {
-  const query = '(max-width: 639px)'
-  const [isPhone, setIsPhone] = useState(() => window.matchMedia(query).matches)
-  useEffect(() => {
-    const media = window.matchMedia(query)
-    const update = () => setIsPhone(media.matches)
-    media.addEventListener('change', update)
-    return () => media.removeEventListener('change', update)
-  }, [])
-  return isPhone
-}
-
 /**
  * The home screen — an LLM start page.
  *
@@ -65,16 +52,20 @@ function useIsPhone() {
  * new position and slides it smoothly (using transforms, so it stays fast).
  *
  * Other parts of the page can ask a question here with requestAsk()
- * (see utils/askEvents.js). The header's "Contact" button does that: the page
- * scrolls up, the question is typed into the bar letter by letter, and sent.
+ * (see utils/askEvents.js). The Contact and EN|DE buttons do that: the deck
+ * fades back here, the question is typed into the box letter by letter, and
+ * sent. Questions typed in the prompt box of another slide arrive with
+ * { instant: true } and are sent straight away.
+ *
+ * The chat itself is shared (components/HomeChat.jsx), so the sidebar and
+ * the top bar can show it too.
  */
 export default function Hero() {
   const { data, t } = useLanguage()
   const { hero } = data.conversation
   const { topics, suggestions } = data.askPortfolio
   const headingWords = hero.heading.split(' ')
-  const isPhone = useIsPhone()
-  const chat = usePortfolioChat()
+  const chat = useHomeChat()
   const chatRef = useRef(chat)
   chatRef.current = chat
   const composerRef = useRef(null)
@@ -93,11 +84,13 @@ export default function Hero() {
     if (thread) thread.scrollTo({ top: thread.scrollHeight, behavior: 'smooth' })
   }, [chat.messages, chat.isThinking, chat.liveThoughts])
 
-  // Keyboard shortcut: press "/" anywhere to jump into the prompt bar
+  // Keyboard shortcut: press "/" anywhere to jump into the prompt box
+  // (on the other slides, SlideComposer.jsx handles "/" for its own box)
   useEffect(() => {
     function handleKeyDown(event) {
       const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)
-      if (event.key === '/' && !isTyping) {
+      const isHomeShown = !deckRef.current.isDeck || deckRef.current.activeId === 'home'
+      if (event.key === '/' && !isTyping && isHomeShown) {
         event.preventDefault()
         composerRef.current?.focus()
       }
@@ -109,11 +102,12 @@ export default function Hero() {
   // Questions sent from elsewhere (e.g. the header's "Contact" button)
   useEffect(
     () =>
-      onAskRequest(async (question) => {
+      onAskRequest(async (question, options = {}) => {
         // Slide mode: fade back to the home slide. Scrolling page: scroll up.
         if (deckRef.current.isDeck) await deckRef.current.goTo('home')
         else await scrollToTop(reduceMotion)
-        composerRef.current?.typeAndSubmit(question)
+        if (options.instant) chatRef.current.ask(question, { speak: options.speak })
+        else composerRef.current?.typeAndSubmit(question)
       }),
     [reduceMotion],
   )
@@ -135,33 +129,20 @@ export default function Hero() {
     chat.ask(question, { speak: fromVoice })
   }
 
-  function startNewChat() {
-    chat.reset()
-    composerRef.current?.focus()
-  }
-
   return (
     <motion.section
       ref={heroRef}
       style={heroFade}
       id="home"
       aria-label={t('heroLabel')}
-      className="relative flex h-[calc(100svh-4rem)] min-h-[540px] flex-col"
+      // In the app layout the home slide fills the chat area below the top bar
+      className={`relative flex flex-col ${deck.isDeck ? 'h-full min-h-[420px]' : 'h-[calc(100svh-4rem)] min-h-[540px]'}`}
     >
       {/* Top area: empty space (state 1) or the chat thread (state 2) */}
       {isChatting ? (
+        // ("New chat" lives in the sidebar, and in the top bar on phones)
         <div className="relative flex min-h-0 flex-1 flex-col">
-          <div className="flex justify-end pt-3">
-            <button
-              type="button"
-              onClick={startNewChat}
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted transition-colors hover:bg-white/5 hover:text-ink"
-            >
-              <SquarePen size={15} aria-hidden="true" />
-              {t('newChat')}
-            </button>
-          </div>
-          <div ref={threadRef} className="min-h-0 flex-1 overflow-y-auto pb-6 pt-2">
+          <div ref={threadRef} className="min-h-0 flex-1 overflow-y-auto pb-6 pt-4">
             <ChatThread
               messages={chat.messages}
               isThinking={chat.isThinking}
@@ -189,7 +170,7 @@ export default function Hero() {
             <motion.p variants={headingWord} className="mb-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
               {data.onboarding.hello.eyebrow}
             </motion.p>
-            <h1 className="text-balance font-display text-[34px] font-medium leading-[1.08] tracking-[-0.02em] text-ink sm:text-[48px]">
+            <h1 className="text-balance font-display text-[34px] font-medium leading-[1.08] tracking-[-0.04em] text-ink sm:text-[48px]">
               {headingWords.map((word, index) => (
                 <motion.span key={`${word}-${index}`} variants={headingWord} className="inline-block">
                   {word}
@@ -201,12 +182,12 @@ export default function Hero() {
         )}
       </AnimatePresence>
 
-      {/* The prompt bar. `layout` animates its move from the middle to the bottom. */}
+      {/* The prompt box. `layout` animates its move from the middle to the bottom. */}
       <motion.div layout="position" transition={{ type: 'spring', stiffness: 260, damping: 32 }}>
         <PromptComposer
           ref={composerRef}
           id="hero-prompt"
-          placeholder={isPhone ? hero.placeholderShort : hero.placeholder}
+          placeholder={hero.placeholder}
           onSubmit={handleSubmit}
           isBusy={chat.isThinking}
           thinkMode={chat.thinkMode}
@@ -232,7 +213,7 @@ export default function Hero() {
                 <button
                   type="button"
                   onClick={() => chat.ask(suggestion)}
-                  className="rounded-full border border-line px-3.5 py-1.5 text-[13px] text-muted transition-colors hover:border-line-strong hover:bg-white/5 hover:text-ink"
+                  className="rounded-full border border-line px-3.5 py-1.5 text-[13px] text-muted transition-colors hover:border-line-strong hover:bg-ink/5 hover:text-ink"
                 >
                   {suggestion}
                 </button>

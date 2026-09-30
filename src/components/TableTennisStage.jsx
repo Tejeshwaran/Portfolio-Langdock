@@ -167,7 +167,7 @@ export default function TableTennisStage({ word }) {
       <p className="sr-only">{word}</p>
       {isWordVisible && (
         <div className="pointer-events-none absolute inset-x-0 top-[29%] flex -translate-y-1/2 justify-center" aria-hidden="true">
-          <p className="flex font-display text-[26px] font-medium tracking-[0.01em] text-ink sm:text-[46px]">
+          <p className="flex font-display text-[26px] font-medium tracking-[-0.03em] text-ink sm:text-[46px]">
             {letters.map((letter, index) => (
               <motion.span
                 key={`${word}-${index}`}

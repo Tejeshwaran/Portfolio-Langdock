@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import ChatMessage from './ChatMessage'
+import MessageActions from './MessageActions'
 import ContactDetails from './ContactDetails'
 import PopIn, { RevealContext } from './PopIn'
 import ThinkingDots from './ThinkingDots'
@@ -33,13 +34,20 @@ function AnswerLink({ link }) {
  */
 function AiAnswer({ message, textSize }) {
   const [isTyped, setIsTyped] = useState(!message.animate)
+  // Goes up by one each time "regenerate" is pressed → the text types again
+  const [runId, setRunId] = useState(0)
+
+  function regenerate() {
+    setIsTyped(false)
+    setRunId((id) => id + 1)
+  }
 
   return (
-    <ChatMessage role="ai">
+    <ChatMessage role="ai" actions={<MessageActions text={message.text} onRegenerate={regenerate} visible={isTyped} />}>
       {message.thoughts && <ThoughtTrace steps={message.thoughts} seconds={message.thoughtSeconds} />}
       <div className={`break-words ${textSize}`}>
-        {message.animate ? (
-          <TypewriterText text={message.text} speed={9} onComplete={() => setIsTyped(true)} />
+        {message.animate || runId > 0 ? (
+          <TypewriterText text={message.text} speed={9} restartKey={runId} onComplete={() => setIsTyped(true)} />
         ) : (
           message.text
         )}

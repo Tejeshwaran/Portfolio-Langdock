@@ -7,19 +7,18 @@ import { useLanguage } from '../i18n/LanguageContext'
 import HackerLogo from '../components/HackerLogo'
 
 // ─────────────────────────────────────────────────────────────
-// Onboarding — three intro pages in the style of "Concept B — Command
-// Prompt" (warm near-black, serif headlines, terminal details, orange).
+// Onboarding — two intro pages with small "command prompt" details
+// (mono labels, boot log), in the same look as the site.
 //
 //   1. Hello     a short letter to the Langdock team + a "booting" terminal
-//   2. Guide     four commands: how to use the portfolio
-//   3. Summary   the short version of the résumé, then "Start the conversation"
+//   2. Summary   the short version of the résumé, then "Start the conversation"
 //
 // Move with Enter / arrow keys / mouse wheel / swipe; Esc or "Skip intro"
 // jumps straight to the portfolio. All texts are in portfolioData.js
 // (onboarding) and uiText.js.
 // ─────────────────────────────────────────────────────────────
 
-const STEP_COUNT = 3
+const STEP_COUNT = 2
 const INPUT_LOCK_MS = 700 // one wheel flick = one page
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -46,12 +45,12 @@ function Eyebrow({ children }) {
   )
 }
 
-/** The big serif headline */
+/** The big headline */
 function Title({ children }) {
   return (
     <motion.h1
       variants={itemVariants}
-      className="mt-4 font-display text-[40px] font-medium leading-[1.05] tracking-[-0.02em] text-term-ink sm:text-[64px]"
+      className="mt-4 font-display text-[40px] font-medium leading-[1.05] tracking-[-0.04em] text-term-ink sm:text-[64px]"
     >
       {children}
     </motion.h1>
@@ -130,34 +129,7 @@ function HelloPage({ content }) {
   )
 }
 
-/** Page 2 — four commands */
-function GuidePage({ content }) {
-  return (
-    <motion.div variants={listVariants} initial="enter" animate="shown" className="mx-auto max-w-3xl text-center">
-      <Eyebrow>{content.eyebrow}</Eyebrow>
-      <Title>{content.title}</Title>
-      <ul className="mt-10 grid gap-3 text-left sm:grid-cols-2">
-        {content.commands.map((item) => (
-          <motion.li
-            key={item.command}
-            variants={itemVariants}
-            className="rounded-xl border border-term-line bg-term-panel p-5 transition-colors duration-200 hover:border-term-muted/40"
-          >
-            <p className="font-code text-[14px] text-term-ink">
-              <span className="mr-2 text-term-accent" aria-hidden="true">
-                &gt;
-              </span>
-              {item.command}
-            </p>
-            <p className="mt-2 text-[15px] leading-relaxed text-term-muted">{item.text}</p>
-          </motion.li>
-        ))}
-      </ul>
-    </motion.div>
-  )
-}
-
-/** Page 3 — the résumé in six lines, built from portfolioData.js */
+/** Page 2 — the résumé in six lines, built from portfolioData.js */
 function SummaryPage({ content }) {
   const { data, t } = useLanguage()
   const [masters, bachelors] = data.education
@@ -200,7 +172,7 @@ function SummaryPage({ content }) {
           </motion.div>
         ))}
       </motion.dl>
-      <motion.p variants={itemVariants} className="mt-8 font-display text-[22px] italic text-term-ink sm:text-[26px]">
+      <motion.p variants={itemVariants} className="mt-8 font-display text-[22px] font-medium tracking-[-0.02em] text-term-ink sm:text-[26px]">
         {content.closing}
       </motion.p>
     </motion.div>
@@ -338,7 +310,6 @@ export default function Onboarding({ onFinish }) {
 
   const pages = [
     <HelloPage key="hello" content={content.hello} />,
-    <GuidePage key="guide" content={content.guide} />,
     <SummaryPage key="summary" content={content.summary} />,
   ]
   const isLastStep = step === STEP_COUNT - 1
@@ -429,7 +400,7 @@ export default function Onboarding({ onFinish }) {
             <button
               type="button"
               onClick={() => move(1)}
-              className="group inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-term-accent px-5 py-2.5 font-code text-[13px] font-medium text-term-bg transition-transform duration-200 hover:scale-[1.03]"
+              className="group inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-term-ink px-5 py-2.5 font-code text-[13px] font-medium text-term-bg transition-transform duration-200 hover:scale-[1.03]"
             >
               {isLastStep ? t('startConversation') : t('next')}
               <CornerDownLeft size={14} aria-hidden="true" className="opacity-70" />

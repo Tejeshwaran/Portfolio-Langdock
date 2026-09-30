@@ -263,8 +263,6 @@ const conversation = {
   hero: {
     heading: L('Tejeshwaran is a Web Developer and Data Analyst', 'Tejeshwaran ist Webentwickler und Datenanalyst'),
     placeholder: L('Typing ❌ Just scrolling ✅', 'Tippen ❌ Einfach scrollen ✅'),
-    // Phones have less room in the prompt bar, so they get a shorter version
-    placeholderShort: L('Typing ❌ Scrolling ✅', 'Tippen ❌ Scrollen ✅'),
   },
   about: {
     question: L('Who is Tejeshwaran?', 'Wer ist Tejeshwaran?'),
@@ -358,40 +356,6 @@ const onboarding = {
       { text: L('loading résumé data', 'Lebenslaufdaten laden'), status: 'ok' },
       { text: L('languages: en · de', 'Sprachen: en · de'), status: 'ok' },
       { text: L('answer engine: local, no API', 'Antwort-Engine: lokal, keine API'), status: L('ready', 'bereit') },
-    ],
-  },
-  guide: {
-    eyebrow: L('How it works', 'So funktioniert es'),
-    title: L('Four commands, two minutes.', 'Vier Befehle, zwei Minuten.'),
-    commands: [
-      {
-        command: L('ask', 'frag'),
-        text: L(
-          'Type any question into the prompt bar. The answer comes straight from my résumé — no guessing, no external API.',
-          'Stellen Sie eine beliebige Frage in der Eingabezeile. Die Antwort kommt direkt aus meinem Lebenslauf — ohne Raten, ohne externe API.',
-        ),
-      },
-      {
-        command: 'scroll',
-        text: L(
-          'Every scroll or swipe moves one step. Each part of the page is a short question and answer.',
-          'Jedes Scrollen oder Wischen ist ein Schritt. Jeder Teil der Seite ist eine kurze Frage mit Antwort.',
-        ),
-      },
-      {
-        command: L('think', 'nachdenken'),
-        text: L(
-          'Switch on Think and watch how each answer is found.',
-          'Schalten Sie „Nachdenken“ ein und sehen Sie, wie jede Antwort gefunden wird.',
-        ),
-      },
-      {
-        command: L('deutsch', 'english'),
-        text: L(
-          'Prefer German? Press EN | DE — the site asks for it, then translates itself.',
-          'Lieber Englisch? Mit EN | DE fragt die Website danach und übersetzt sich selbst.',
-        ),
-      },
     ],
   },
   summary: {

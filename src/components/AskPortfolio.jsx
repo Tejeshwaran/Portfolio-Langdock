@@ -44,7 +44,7 @@ export default function AskPortfolio() {
         <button
           type="button"
           onClick={chat.reset}
-          className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-muted transition-colors hover:bg-white/5 hover:text-ink"
+          className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-muted transition-colors hover:bg-ink/5 hover:text-ink"
         >
           <RotateCcw size={13} aria-hidden="true" />
           {t('reset')}
@@ -80,7 +80,7 @@ export default function AskPortfolio() {
                 type="button"
                 onClick={() => chat.ask(suggestion)}
                 disabled={chat.isThinking}
-                className="rounded-full border border-line px-3 py-1.5 text-xs text-body transition-colors hover:border-line-strong hover:bg-white/5 hover:text-ink disabled:opacity-50"
+                className="rounded-full border border-line px-3 py-1.5 text-xs text-body transition-colors hover:border-line-strong hover:bg-ink/5 hover:text-ink disabled:opacity-50"
               >
                 {suggestion}
               </button>

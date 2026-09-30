@@ -30,7 +30,7 @@ function CopyButton({ value, label }) {
       type="button"
       onClick={copyValue}
       aria-label={isCopied ? t('copied', label) : t('copy', label)}
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-white/5 hover:text-ink"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-ink/5 hover:text-ink"
     >
       {isCopied ? <Check size={15} className="text-success" aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />}
     </button>

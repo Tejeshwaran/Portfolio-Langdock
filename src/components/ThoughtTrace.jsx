@@ -43,7 +43,7 @@ export default function ThoughtTrace({ steps, seconds, live = false }) {
     return (
       <div className="mb-2" role="status">
         {/* The shimmer is a moving gradient clipped to the text (CSS only) */}
-        <p className="mb-2 animate-shimmer bg-[linear-gradient(90deg,#8F8D88_0%,#8F8D88_40%,#F0EFEA_50%,#8F8D88_60%,#8F8D88_100%)] bg-[length:200%_100%] bg-clip-text text-sm font-medium text-transparent">
+        <p className="mb-2 animate-shimmer bg-[linear-gradient(90deg,rgb(var(--c-muted))_0%,rgb(var(--c-muted))_40%,rgb(var(--c-ink))_50%,rgb(var(--c-muted))_60%,rgb(var(--c-muted))_100%)] bg-[length:200%_100%] bg-clip-text text-sm font-medium text-transparent">
           {t('thinking')}
         </p>
         <StepList steps={steps} highlightLast />

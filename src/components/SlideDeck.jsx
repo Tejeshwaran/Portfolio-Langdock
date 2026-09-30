@@ -36,6 +36,11 @@ const slideVariants = {
  * change the slide. This covers the slide itself (when its content is
  * taller than the screen) and scroll boxes inside it, like the chats.
  */
+/** Is the element inside a part marked data-deck-ignore (sidebar, drawer)? */
+function isIgnored(target) {
+  return target instanceof Element && Boolean(target.closest('[data-deck-ignore]'))
+}
+
 export function canScrollInside(target, direction, slideElement) {
   if (!slideElement) return false
   let element = target instanceof Element ? target : null
@@ -96,7 +101,8 @@ function FitToScreen({ children, wide = false }) {
   return (
     <div
       ref={areaRef}
-      className={`mx-auto flex min-h-full flex-col justify-center px-4 pb-20 pt-5 sm:px-6 ${wide ? 'max-w-4xl' : 'max-w-3xl'}`}
+      // pb-24 keeps the content clear of the prompt box at the bottom (SlideComposer.jsx)
+      className={`mx-auto flex min-h-full flex-col justify-center px-4 pb-24 pt-4 sm:px-6 ${wide ? 'max-w-4xl' : 'max-w-3xl'}`}
     >
       <div style={isShrunk ? { height: fit.height * fit.scale } : undefined}>
         <div
@@ -112,7 +118,8 @@ function FitToScreen({ children, wide = false }) {
   )
 }
 
-/** Small dots on the right edge: where am I, and click to jump */
+/** Small dots on the right edge: where am I, and click to jump.
+ *  Only on tablets — on computers the sidebar shows where you are. */
 function SlideDots({ count, activeIndex, onSelect }) {
   const { t } = useLanguage()
   if (activeIndex === 0) return null // keep the home screen clean
@@ -120,7 +127,7 @@ function SlideDots({ count, activeIndex, onSelect }) {
   return (
     <nav
       aria-label={t('slidesLabel')}
-      className="fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-2 sm:flex"
+      className="fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-2 sm:flex lg:hidden"
     >
       {Array.from({ length: count }, (_, index) => (
         <button
@@ -222,6 +229,7 @@ export function SlideDeckProvider({ slides, children }) {
   useEffect(() => {
     function handleWheel(event) {
       if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return // sideways: ignore
+      if (isIgnored(event.target)) return // e.g. the sidebar: let it scroll normally
       const now = performance.now()
 
       // During a change, and while a trackpad is still "gliding" after it,
@@ -261,7 +269,8 @@ export function SlideDeckProvider({ slides, children }) {
   // Swipes on phones and tablets
   useEffect(() => {
     function handleTouchStart(event) {
-      if (event.touches.length !== 1) return
+      touchRef.current = null
+      if (event.touches.length !== 1 || isIgnored(event.target)) return
       const touch = event.touches[0]
       const slide = slideRefs.current[activeIndexRef.current]
       // Remember whether the content could still scroll when the finger went down
@@ -348,7 +357,8 @@ export function SlideStage() {
 
   return (
     <>
-      <div className="relative h-[calc(100dvh-4rem)] overflow-hidden">
+      {/* Fills the chat area of the AppShell (below the top bar) */}
+      <div className="absolute inset-0 overflow-hidden">
         {slides.map((slide, index) => {
           const isActive = index === activeIndex
           // Only the active slide and the one fading out are drawn. All others

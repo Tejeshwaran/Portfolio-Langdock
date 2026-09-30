@@ -52,15 +52,25 @@ src/
   i18n/
     LanguageContext.jsx   current language + useLanguage() hook
     uiText.js             interface words in English and German
+  theme/
+    ThemeContext.jsx      dark / light look + useTheme() hook
   hooks/
     usePortfolioChat.js   state of one chat (messages, thinking, Think mode, commands)
     useSpeechRecognition.js  voice input with the browser's Web Speech API
+    useMediaQuery.js      true while a screen-size query matches
   components/
-    PromptComposer.jsx    the "Ask anything" bar (+ menu, Think, mic, voice/send)
+    AppShell.jsx          the app layout: sidebar + top bar + chat area
+    Sidebar.jsx           left column: New chat, sections, projects, Today, progress, profile
+    TopBar.jsx            title of the current part, EN | DE, dark/light, copy link
+    SlideComposer.jsx     the prompt box at the bottom of every slide (not home)
+    HomeChat.jsx          the one shared home chat (home screen, sidebar, top bar)
+    appNav.js             which sidebar item belongs to which slide + titles
+    MessageActions.jsx    copy / "write again" buttons under an AI answer
+    PromptComposer.jsx    the "Ask anything" box (+ menu, Think, mic, voice/send)
     ChatThread.jsx        list of chat messages
     ThoughtTrace.jsx      "Thinking…" steps / "Thought for 1.8s" panel
-    AIHeader.jsx          sticky top bar (logo, name, Contact, EN | DE)
-    FloatingNav.jsx       floating "command bar" at the bottom
+    AIHeader.jsx          top bar of the old scrolling version (+ the EN | DE switch)
+    FloatingNav.jsx       bottom menu of the old scrolling version
     ConversationBlock.jsx question → thinking → typing → cards (scroll-driven)
     ChatMessage.jsx       one user bubble or AI message
     TypewriterText.jsx    character-by-character typing
@@ -150,7 +160,7 @@ Set `DEFAULT_SCROLL_EFFECT = 'classic'` to go back to the version without
 fading, or compare both by adding `?scroll=classic` / `?scroll=fade` to the
 address.
 
-**Scroll progress:** the scrollbar is hidden (`index.css`). A thin blue line
+**Scroll progress:** the scrollbar is hidden (`index.css`). A thin accent line
 at the top (`ScrollProgress.jsx`) shows how far down you are instead.
 
 **Smooth on phones:** only `transform` and `opacity` are animated, scroll
@@ -178,14 +188,13 @@ blur on small screens.
 
 ## The intro (onboarding)
 
-Before the portfolio, a visitor sees three short pages in the style of
-"Concept B — Command Prompt" (`UI Ideas/`): warm near-black, serif headlines
-(Fraunces), terminal details (IBM Plex Mono) and one orange accent.
+Before the portfolio, a visitor sees two short pages with small
+"command prompt" details (mono labels, a boot log) in the same light
+theme as the rest of the site.
 
 1. **Hello** — a short note to the Langdock team, and a small terminal that
    "boots" the portfolio.
-2. **How it works** — four commands: ask, scroll, think, deutsch.
-3. **The short version** — the résumé in seven lines, built from
+2. **The short version** — the résumé in seven lines, built from
    `portfolioData.js`, then "Start the conversation".
 
 - Move with Enter, arrow keys, the mouse wheel or a swipe; Esc or
@@ -196,8 +205,8 @@ Before the portfolio, a visitor sees three short pages in the style of
   `src/config/onboarding.js`.
 - Texts: `onboarding` in `portfolioData.js` (English + German) and the
   intro words in `uiText.js`. Code: `src/onboarding/Onboarding.jsx`.
-- The whole site uses the same Concept B theme (see "Where to change
-  colours"); the intro's `term.*` colours are the same values.
+- The intro uses the same light theme as the site (see "Where to change
+  colours"); its `term.*` colours are the same values.
 
 ## Beyond IT (table tennis)
 
@@ -207,6 +216,38 @@ over a small table, flies up and pops — and the word "Table Tennis"
 ("Tischtennis") bursts out of it, letter by letter from the middle. Then a
 small rally keeps going. Texts and tags: `conversation.beyond` in
 `portfolioData.js`.
+
+## The app layout (AppShell.jsx)
+
+The portfolio looks like an AI workspace app:
+
+- **Sidebar (left):** logo, "New chat", one item per part (About,
+  Education, Experience, Skills, Languages, Beyond IT, Why this portfolio,
+  Contact), the three projects, "Today" (the current chat, named after its
+  first question), an "Explore the portfolio" card that shows how much has
+  been seen (click it for the next unseen part), and the name at the
+  bottom (click → asks for the contact details).
+  - Computers (1024px and wider): a column; the button next to the logo
+    collapses it. Phones and tablets: a drawer that slides in from the
+    left (☰ in the top bar).
+  - Wheel and swipe gestures on the sidebar scroll the sidebar, not the
+    slides (`data-deck-ignore`).
+- **Top bar:** the title of what you are looking at (at home: the chat's
+  first question), EN | DE, ☀/☾ for the dark / light look, and a button
+  that copies the portfolio link.
+- **Chat area:** the slides. Scrolling still moves one slide at a time.
+  Every slide except home has a prompt box at the bottom; a question sent
+  there fades back to the home chat and is answered there.
+- **Messages:** round visitor bubbles on the right; AI answers with a
+  round avatar, and copy / "write again" buttons underneath.
+
+## Dark and light
+
+Dark is the default. The ☀/☾ button switches, and the choice is
+remembered (localStorage `portfolio-theme`). The colours are CSS
+variables in `src/index.css` — one set for light, one for dark — so every
+component works in both without changes (see "Where to change colours").
+Where the browser supports it, the switch cross-fades the whole page.
 
 ## The home screen (Hero.jsx)
 
@@ -228,9 +269,10 @@ small rally keeps going. Texts and tags: `conversation.beyond` in
     the button turns into the send button.
   - Voice uses the browser's built-in Web Speech API (Chrome, Edge, Safari).
     Other browsers show a short message instead.
-- **Shortcut:** press `/` anywhere to jump into the prompt bar.
-- **Header buttons type for the visitor:** Contact and the EN | DE
-  switch don't open anything directly. Each one types a question
+- **Shortcut:** press `/` anywhere to jump into the prompt box (on the
+  other slides: into the box at the bottom).
+- **Buttons type for the visitor:** the name in the sidebar (contact) and
+  the EN | DE switch don't open anything directly. Each one types a question
   into the prompt bar and sends it ("How can I contact Tejeshwaran?", "Change the entire
   website to German"). The questions are in `askPortfolio` in
   `portfolioData.js` (`contactQuestion`, `languageQuestions`).
@@ -238,11 +280,12 @@ small rally keeps going. Texts and tags: `conversation.beyond` in
   open anything either. A small chat pops open inside the contact card,
   types the question, and shows the answer with the contact cards
   (`sections/Footer.jsx`).
-- **Contact button (header):** it does not open an email. It scrolls to the
-  top, types "How can I contact Tejeshwaran?" into the prompt bar letter by
-  letter (`typeAndSubmit` in `PromptComposer.jsx`), sends it, and the answer
-  shows contact cards with copy buttons (`ContactDetails.jsx`). The header
-  talks to the home screen through a small browser event
+- **Contact (the name in the sidebar):** it does not open an email. It
+  goes to the home chat, types "How can I contact Tejeshwaran?" into the
+  prompt box letter by letter (`typeAndSubmit` in `PromptComposer.jsx`),
+  sends it, and the answer shows contact cards with copy buttons
+  (`ContactDetails.jsx`). The sidebar talks to the home screen through a
+  small browser event
   (`src/utils/askEvents.js` → `requestAsk(question)`), so any other button
   can do the same. The question text is `askPortfolio.contactQuestion` and the
   cards come from `contactDetails` in `portfolioData.js`.
@@ -294,11 +337,15 @@ The home heading and placeholder are in `conversation.hero`.
 
 ## 6. Where to change colours
 
-`tailwind.config.js` → `theme.extend.colors`.
+The colour values are CSS variables in `src/index.css`: `:root` holds the
+light look, `:root[data-theme='dark']` the dark look. Each value is
+"red green blue" (e.g. `31 32 38`). `tailwind.config.js` →
+`theme.extend.colors` only gives them names.
 
 | Name          | Used for                   |
 | ------------- | -------------------------- |
-| `canvas`      | page background (warm near-black) |
+| `canvas`      | chat area background       |
+| `sidebar`     | the sidebar                |
 | `surface`     | cards                      |
 | `subtle`      | quiet fills (chips)        |
 | `composer`    | the "Ask anything" bar     |
@@ -307,12 +354,15 @@ The home heading and placeholder are in `conversation.hero`.
 | `ink`         | headings, main text        |
 | `body`        | paragraph text             |
 | `muted`       | labels, placeholders       |
-| `accent`      | orange accent (`accent.fill` = voice button) |
+| `accent`      | accent: soft blue (dark) / deep teal (light); `accent.fill` = voice button |
 | `success`     | green "online" dots, "copied" ticks |
 
-The theme is "Concept B — Command Prompt" (`UI Ideas/`): warm near-black,
-warm white, one orange accent. Fonts: IBM Plex Sans (text), IBM Plex Mono
-(terminal-style labels) and Fraunces (serif headlines, `font-display`).
+Dark: near-black sidebar, graphite chat area, soft blue accent. Light:
+soft gray page, near-black text, flat white cards, deep-teal accent.
+Layout and feel follow the Langdock app, but only the feeling is
+borrowed — no Langdock logo, text or font. Fonts: Geist (text and headlines, `font-display`, with tight
+letter spacing) and Geist Mono (terminal-style labels), both free on
+Google Fonts.
 
 Components only use these names (`bg-canvas`, `text-accent` …), so one
 change updates the whole site. Fonts are set in the same file and loaded

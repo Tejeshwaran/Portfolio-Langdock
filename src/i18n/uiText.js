@@ -138,6 +138,29 @@ const uiText = {
     // Footer
     startNewConversation: 'Start a new conversation',
     closeChat: 'Close chat',
+
+    // App layout (sidebar + top bar)
+    sidebarLabel: 'Portfolio navigation',
+    openSidebar: 'Open sidebar',
+    closeSidebar: 'Close sidebar',
+    today: 'Today',
+    noChatsYet: 'Your questions will appear here',
+    topicWhy: 'Why this portfolio',
+    topicContact: 'Contact',
+    exploreTitle: 'Explore the portfolio',
+    explored: (percent) => `${percent}% explored`,
+    exploreCheer: (percent) =>
+      percent >= 100 ? 'All seen!' : percent >= 70 ? 'Almost there!' : percent >= 35 ? 'Keep going!' : 'Great start!',
+    exploreNext: 'Show the next part you have not seen yet',
+    contactPerson: (name) => `Contact ${name}`,
+    switchToLight: 'Switch to light mode',
+    switchToDark: 'Switch to dark mode',
+    shareLink: 'Copy the link to this portfolio',
+    linkCopied: 'Link copied',
+    slidePlaceholder: 'Ask anything…',
+    copyAnswer: 'Copy answer',
+    answerCopied: 'Answer copied',
+    regenerate: 'Write the answer again',
   },
 
   de: {
@@ -258,6 +281,28 @@ const uiText = {
 
     startNewConversation: 'Neues Gespräch starten',
     closeChat: 'Chat schließen',
+
+    sidebarLabel: 'Portfolio-Navigation',
+    openSidebar: 'Seitenleiste öffnen',
+    closeSidebar: 'Seitenleiste schließen',
+    today: 'Heute',
+    noChatsYet: 'Deine Fragen erscheinen hier',
+    topicWhy: 'Warum dieses Portfolio',
+    topicContact: 'Kontakt',
+    exploreTitle: 'Portfolio entdecken',
+    explored: (percent) => `${percent} % entdeckt`,
+    exploreCheer: (percent) =>
+      percent >= 100 ? 'Alles gesehen!' : percent >= 70 ? 'Fast geschafft!' : percent >= 35 ? 'Weiter so!' : 'Guter Start!',
+    exploreNext: 'Den nächsten noch nicht gesehenen Teil zeigen',
+    contactPerson: (name) => `${name} kontaktieren`,
+    switchToLight: 'Zum hellen Modus wechseln',
+    switchToDark: 'Zum dunklen Modus wechseln',
+    shareLink: 'Link zu diesem Portfolio kopieren',
+    linkCopied: 'Link kopiert',
+    slidePlaceholder: 'Frag irgendwas …',
+    copyAnswer: 'Antwort kopieren',
+    answerCopied: 'Antwort kopiert',
+    regenerate: 'Antwort neu schreiben',
   },
 }
 

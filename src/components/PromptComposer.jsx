@@ -43,9 +43,11 @@ function ListeningBars() {
 }
 
 /**
- * PromptComposer — the rounded "Ask anything" bar.
+ * PromptComposer — the rounded "Ask anything" box.
  *
- *  [+]  Ask anything ……………  [Think] [mic] [● voice / ↑ send]
+ *  size="large" (home):     Ask anything ……………………………………………
+ *                           [+] [Think]              [mic] [● / ↑]
+ *  size="compact" (slides): [+]  Ask anything ……  [Think] [mic] [● / ↑]
  *
  *  +      opens a menu of topics to ask about
  *  Think  toggles "Think" mode (answers show their reasoning steps)
@@ -214,137 +216,173 @@ const PromptComposer = forwardRef(function PromptComposer(
 
   const isLarge = size === 'large'
   const iconButton =
-    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-ink transition-colors hover:bg-white/10 sm:h-9 sm:w-9'
+    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:bg-ink/5 hover:text-ink sm:h-9 sm:w-9'
+
+  // ── The pieces of the box (arranged differently for large / compact) ──
+
+  const topicsMenu = (
+    <div ref={menuRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setIsMenuOpen((open) => !open)}
+        aria-expanded={isMenuOpen}
+        aria-haspopup="true"
+        aria-label={t('askAboutTopic')}
+        className={iconButton}
+      >
+        <motion.span animate={{ rotate: isMenuOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
+          <Plus size={20} strokeWidth={1.75} aria-hidden="true" />
+        </motion.span>
+      </button>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: menuPlacement === 'up' ? 6 : -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: menuPlacement === 'up' ? 6 : -6, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className={`absolute left-0 z-30 w-60 rounded-2xl border border-line bg-surface p-1.5 shadow-lift ${
+              menuPlacement === 'up' ? 'bottom-full mb-3' : 'top-full mt-3'
+            }`}
+          >
+            <p className="px-2.5 pb-1 pt-1.5 text-xs text-muted">{t('askAbout')}</p>
+            <ul>
+              {topics.map((topic) => {
+                const Icon = TOPIC_ICONS[topic.icon] || Layers
+                return (
+                  <li key={topic.label}>
+                    <button
+                      type="button"
+                      onClick={() => pickTopic(topic)}
+                      className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left text-sm text-ink transition-colors hover:bg-ink/5"
+                    >
+                      <Icon size={16} aria-hidden="true" className="text-muted" />
+                      {topic.label}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+
+  const input = (
+    <>
+      <label htmlFor={id} className="sr-only">
+        {t('promptLabel')}
+      </label>
+      <input
+        ref={inputRef}
+        id={id}
+        type="text"
+        value={value}
+        readOnly={isAutoTyping}
+        onChange={(event) => setValue(event.target.value)}
+        placeholder={speech.isListening ? t('listening') : placeholder}
+        autoComplete="off"
+        enterKeyHint="send"
+        className={`min-w-0 bg-transparent text-ink placeholder:text-muted focus:outline-none focus-visible:outline-none ${
+          isLarge ? 'block w-full px-2 py-1.5 text-[16px] sm:text-[17px]' : 'flex-1 px-1 text-[15px] sm:px-2'
+        }`}
+      />
+    </>
+  )
+
+  // Think mode toggle — in the large box it shows its label, like a menu button
+  const thinkButton = (
+    <button
+      type="button"
+      onClick={onToggleThink}
+      aria-pressed={thinkMode}
+      className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-[14px] font-medium transition-colors sm:h-9 sm:px-2.5 ${
+        thinkMode ? 'bg-accent-soft text-accent-strong' : 'text-body hover:bg-ink/5 hover:text-ink'
+      }`}
+    >
+      <Brain size={17} strokeWidth={1.75} aria-hidden="true" />
+      <span className={isLarge ? '' : 'hidden sm:inline'}>{t('think')}</span>
+      {!isLarge && <span className="sr-only sm:hidden">{t('thinkMode')}</span>}
+    </button>
+  )
+
+  const micButton = (
+    <button
+      type="button"
+      onClick={toggleDictation}
+      aria-pressed={isDictating}
+      aria-label={isDictating ? t('stopDictation') : t('dictate')}
+      className={`${iconButton} ${isDictating ? 'bg-accent-soft text-accent' : ''}`}
+    >
+      <Mic size={18} strokeWidth={1.75} aria-hidden="true" />
+    </button>
+  )
+
+  // Voice mode ↔ send. When the box has text, the voice button becomes "send".
+  const sendOrVoiceButton =
+    hasText && !speech.isListening ? (
+      <button
+        type="submit"
+        disabled={isBusy}
+        aria-label={t('send')}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-canvas transition-opacity disabled:opacity-40"
+      >
+        <ArrowUp size={19} strokeWidth={2.25} aria-hidden="true" />
+      </button>
+    ) : (
+      <button
+        type="button"
+        onClick={toggleVoiceMode}
+        aria-pressed={isVoiceListening}
+        aria-label={isVoiceListening ? t('stopVoice') : t('startVoice')}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-fill text-canvas transition-transform hover:scale-105"
+      >
+        {isVoiceListening ? <ListeningBars /> : <AudioLines size={18} aria-hidden="true" />}
+      </button>
+    )
 
   return (
     <div className="w-full">
+      {/* Large (home screen): two rows, like a modern AI workspace —
+            [ Ask anything …                                   ]
+            [ +  Think                          mic  voice/send ]
+          Compact (slides, contact card): one row. */}
       <form
         onSubmit={handleFormSubmit}
-        className={`relative flex items-center gap-1 rounded-full border bg-composer pl-2 pr-2 transition-[border-color,box-shadow] duration-300 focus-within:border-line-strong ${
-          isAutoTyping ? 'border-accent/60 shadow-[0_0_0_4px_rgba(91,155,250,0.12)]' : 'border-line'
-        } ${isLarge ? 'h-[60px]' : 'h-[52px]'}`}
+        className={`relative rounded-2xl border bg-composer transition-[border-color,box-shadow] duration-300 focus-within:border-line-strong ${
+          isAutoTyping ? 'border-accent/60 shadow-[0_0_0_4px_rgb(var(--c-accent)/0.14)]' : 'border-line'
+        } ${isLarge ? 'px-2 pb-2 pt-2.5 shadow-card' : 'flex h-[52px] items-center gap-1 px-2 shadow-lift'}`}
       >
-        {/* "+" topics menu */}
-        <div ref={menuRef} className="relative">
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen((open) => !open)}
-            aria-expanded={isMenuOpen}
-            aria-haspopup="true"
-            aria-label={t('askAboutTopic')}
-            className={iconButton}
-          >
-            <motion.span animate={{ rotate: isMenuOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
-              <Plus size={isLarge ? 22 : 20} strokeWidth={1.75} aria-hidden="true" />
-            </motion.span>
-          </button>
-
-          <AnimatePresence>
-            {isMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: menuPlacement === 'up' ? 6 : -6, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: menuPlacement === 'up' ? 6 : -6, scale: 0.98 }}
-                transition={{ duration: 0.15 }}
-                className={`absolute left-0 z-30 w-60 rounded-2xl border border-line bg-surface p-1.5 shadow-lift ${
-                  menuPlacement === 'up' ? 'bottom-full mb-3' : 'top-full mt-3'
-                }`}
-              >
-                <p className="px-2.5 pb-1 pt-1.5 text-xs text-muted">{t('askAbout')}</p>
-                <ul>
-                  {topics.map((topic) => {
-                    const Icon = TOPIC_ICONS[topic.icon] || Layers
-                    return (
-                      <li key={topic.label}>
-                        <button
-                          type="button"
-                          onClick={() => pickTopic(topic)}
-                          className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left text-sm text-ink transition-colors hover:bg-white/5"
-                        >
-                          <Icon size={16} aria-hidden="true" className="text-muted" />
-                          {topic.label}
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <label htmlFor={id} className="sr-only">
-          {t('promptLabel')}
-        </label>
-        <input
-          ref={inputRef}
-          id={id}
-          type="text"
-          value={value}
-          readOnly={isAutoTyping}
-          onChange={(event) => setValue(event.target.value)}
-          placeholder={speech.isListening ? t('listening') : placeholder}
-          autoComplete="off"
-          enterKeyHint="send"
-          className={`min-w-0 flex-1 bg-transparent px-1 sm:px-2 text-ink placeholder:text-muted focus:outline-none focus-visible:outline-none ${
-            isLarge ? 'text-[17px] placeholder:text-[14px] sm:placeholder:text-[17px]' : 'text-[15px]'
-          }`}
-        />
-
-        {/* Think mode toggle */}
-        <button
-          type="button"
-          onClick={onToggleThink}
-          aria-pressed={thinkMode}
-          className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2 text-[15px] sm:h-9 sm:px-2.5 transition-colors ${
-            thinkMode ? 'bg-accent-soft text-accent' : 'text-body hover:bg-white/10'
-          }`}
-        >
-          <Brain size={18} strokeWidth={1.75} aria-hidden="true" />
-          <span className="hidden sm:inline">{t('think')}</span>
-          <span className="sr-only sm:hidden">{t('thinkMode')}</span>
-        </button>
-
-        {/* Dictation */}
-        <button
-          type="button"
-          onClick={toggleDictation}
-          aria-pressed={isDictating}
-          aria-label={isDictating ? t('stopDictation') : t('dictate')}
-          className={`${iconButton} ${isDictating ? 'bg-white/10 text-accent' : ''}`}
-        >
-          <Mic size={19} strokeWidth={1.75} aria-hidden="true" />
-        </button>
-
-        {/* Voice mode ↔ send. The icon swaps with a small scale animation. */}
-        {hasText && !speech.isListening ? (
-          <button
-            type="submit"
-            disabled={isBusy}
-            aria-label={t('send')}
-            className={`flex shrink-0 items-center justify-center rounded-full bg-ink text-canvas transition-opacity disabled:opacity-40 ${
-              isLarge ? 'h-10 w-10 sm:h-11 sm:w-11' : 'h-9 w-9'
-            }`}
-          >
-            <ArrowUp size={20} strokeWidth={2.25} aria-hidden="true" />
-          </button>
+        {isLarge ? (
+          <>
+            {input}
+            <div className="mt-1 flex items-center gap-0.5">
+              {topicsMenu}
+              {thinkButton}
+              <div className="flex-1" />
+              {micButton}
+              {sendOrVoiceButton}
+            </div>
+          </>
         ) : (
-          <button
-            type="button"
-            onClick={toggleVoiceMode}
-            aria-pressed={isVoiceListening}
-            aria-label={isVoiceListening ? t('stopVoice') : t('startVoice')}
-            className={`flex shrink-0 items-center justify-center rounded-full bg-accent-fill text-canvas transition-transform hover:scale-105 ${
-              isLarge ? 'h-10 w-10 sm:h-11 sm:w-11' : 'h-9 w-9'
-            }`}
-          >
-            {isVoiceListening ? <ListeningBars /> : <AudioLines size={isLarge ? 20 : 18} aria-hidden="true" />}
-          </button>
+          <>
+            {topicsMenu}
+            {input}
+            {thinkButton}
+            {micButton}
+            {sendOrVoiceButton}
+          </>
         )}
       </form>
 
-      {/* Voice errors / hints (read out by screen readers) */}
-      <p aria-live="polite" className="min-h-[1.25rem] px-5 pt-2 text-center text-xs text-muted">
+      {/* Voice errors / hints (read out by screen readers). The large box
+          keeps the line reserved, so nothing jumps when a message appears. */}
+      <p
+        aria-live="polite"
+        className={`px-5 text-center text-xs text-muted ${isLarge ? 'min-h-[1.25rem] pt-2' : speech.error ? 'pt-2' : ''}`}
+      >
         {speech.error}
       </p>
     </div>

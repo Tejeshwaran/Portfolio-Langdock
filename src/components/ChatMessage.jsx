@@ -10,13 +10,14 @@ const entranceTransition = { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
 
 /**
  * ChatMessage — one message in the conversation.
- *  role="user" → dark bubble on the right
- *  role="ai"   → avatar + plain text on the left (like modern LLM apps)
+ *  role="user" → round bubble on the right
+ *  role="ai"   → round avatar + plain text on the left (like modern AI
+ *                apps); `actions` (copy / regenerate) goes under the text
  *
  * The message is always in the DOM (so it takes up its space from the start);
  * `visible` only animates it in. This keeps the page from jumping.
  */
-export default function ChatMessage({ role, visible = true, children }) {
+export default function ChatMessage({ role, visible = true, actions, children }) {
   const { t } = useLanguage()
   if (role === 'user') {
     return (
@@ -26,7 +27,7 @@ export default function ChatMessage({ role, visible = true, children }) {
         animate={visible ? shownState : hiddenState}
         transition={entranceTransition}
       >
-        <p className="max-w-[85%] rounded-2xl rounded-br-md bg-bubble px-4 py-2.5 text-[15px] leading-relaxed text-ink sm:max-w-[75%]">
+        <p className="max-w-[85%] rounded-[20px] bg-bubble px-4 py-2.5 text-[15px] leading-relaxed text-ink sm:max-w-[75%]">
           <span className="sr-only">{t('visitorAsks')}</span>
           {children}
         </p>
@@ -43,13 +44,15 @@ export default function ChatMessage({ role, visible = true, children }) {
     >
       <div
         aria-hidden="true"
-        className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-accent shadow-card"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-accent"
       >
         <Sparkles size={15} strokeWidth={2} />
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="mb-1 text-xs font-medium text-muted">{t('aiName')}</p>
+      {/* pt-1: the first line of text sits level with the middle of the avatar */}
+      <div className="min-w-0 flex-1 pt-1">
+        <p className="sr-only">{t('aiName')}</p>
         <div className="text-[15px] leading-relaxed text-ink sm:text-base">{children}</div>
+        {actions}
       </div>
     </motion.div>
   )

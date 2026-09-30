@@ -79,7 +79,7 @@ export default function Footer() {
         <PopIn className="rounded-2xl border border-line bg-surface p-5 shadow-card sm:p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-display text-2xl font-medium tracking-[-0.01em] text-ink">{personal.name}</p>
+              <p className="font-display text-2xl font-medium tracking-[-0.03em] text-ink">{personal.name}</p>
               <p className="mt-0.5 text-sm text-body">{personal.tagline}</p>
               <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-muted">
                 <MapPin size={14} aria-hidden="true" />
@@ -93,7 +93,7 @@ export default function Footer() {
                   <button
                     type="button"
                     onClick={() => askInCard(question)}
-                    className="inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm text-body transition-colors hover:border-line-strong hover:bg-subtle hover:text-ink"
+                    className="inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-2 text-sm text-body transition-colors hover:border-line-strong hover:bg-subtle hover:text-ink"
                   >
                     <Icon size={15} aria-hidden="true" />
                     {label}
@@ -107,7 +107,7 @@ export default function Footer() {
                     href={personal.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm text-body transition-colors hover:border-line-strong hover:bg-subtle hover:text-ink"
+                    className="inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-2 text-sm text-body transition-colors hover:border-line-strong hover:bg-subtle hover:text-ink"
                   >
                     <Linkedin size={15} aria-hidden="true" />
                     {t('linkedin')}
@@ -135,7 +135,7 @@ export default function Footer() {
                     type="button"
                     onClick={closeChat}
                     aria-label={t('closeChat')}
-                    className="absolute right-0 top-3 flex h-7 w-7 items-center justify-center rounded-lg text-muted transition-colors hover:bg-white/5 hover:text-ink"
+                    className="absolute right-0 top-3 flex h-7 w-7 items-center justify-center rounded-lg text-muted transition-colors hover:bg-ink/5 hover:text-ink"
                   >
                     <X size={15} aria-hidden="true" />
                   </button>

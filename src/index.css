@@ -2,10 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────
+   THE TWO LOOKS. Each value is "red green blue" (0–255), so Tailwind can
+   add opacity: rgb(var(--c-ink) / 0.05). Names → tailwind.config.js.
+   Dark is the default; <html data-theme="light"> switches to light
+   (set by src/theme/ThemeContext.jsx and a tiny script in index.html).
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Light: soft gray page, white cards, near-black text, deep-teal accent */
+  --c-canvas: 244 244 245;
+  --c-sidebar: 235 235 237;
+  --c-surface: 255 255 255;
+  --c-subtle: 235 235 237;
+  --c-composer: 255 255 255;
+  --c-bubble: 230 230 233;
+  --c-line: 227 227 230;
+  --c-line-strong: 205 205 210;
+  --c-ink: 26 28 33;
+  --c-body: 58 60 66;
+  --c-muted: 105 107 113;
+  --c-accent: 26 100 121;
+  --c-accent-strong: 20 76 94;
+  --c-accent-soft: 220 231 232;
+  --c-accent-fill: 20 76 94;
+  --c-success: 47 125 85;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  /* Dark: near-black sidebar, graphite chat area, soft blue accent */
+  --c-canvas: 31 32 38;
+  --c-sidebar: 19 20 27;
+  --c-surface: 38 39 45;
+  --c-subtle: 43 44 50;
+  --c-composer: 50 51 57;
+  --c-bubble: 43 44 50;
+  --c-line: 46 47 53;
+  --c-line-strong: 68 69 75;
+  --c-ink: 236 236 238;
+  --c-body: 200 201 206;
+  --c-muted: 145 146 153;
+  --c-accent: 124 149 255;
+  --c-accent-strong: 169 185 255;
+  --c-accent-soft: 37 43 72;
+  --c-accent-fill: 141 163 255;
+  --c-success: 111 207 151;
+  color-scheme: dark;
+}
+
 @layer base {
   html {
-    /* Dark scrollbars and form controls */
-    color-scheme: dark;
+    background: rgb(var(--c-canvas));
     /* Smooth scrolling for the floating nav and "Start a new conversation" */
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
@@ -22,19 +69,19 @@
 
   /* One clear, consistent keyboard focus style everywhere */
   :focus-visible {
-    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline: 2px solid rgb(var(--c-accent));
     outline-offset: 3px;
     border-radius: 6px;
   }
 
   ::selection {
-    background: theme('colors.accent.soft');
-    color: theme('colors.ink');
+    background: rgb(var(--c-accent-soft));
+    color: rgb(var(--c-ink));
   }
 }
 
 /* Hidden scrollbars everywhere — the page, the chat boxes and the chip rows
-   still scroll normally (mouse wheel, touch, keyboard). The blue line at the
+   still scroll normally (mouse wheel, touch, keyboard). The thin line at the
    top (ScrollProgress.jsx) shows how far down you are instead. */
 * {
   scrollbar-width: none; /* Firefox */

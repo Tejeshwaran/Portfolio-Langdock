@@ -6,15 +6,17 @@ import { requestAsk } from '../utils/askEvents'
 import { useSlideDeck } from './SlideDeck'
 import HackerLogo from './HackerLogo'
 
-const itemClasses =
-  'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-body transition-colors hover:bg-subtle hover:text-ink'
+const itemClasses = 'inline-flex items-center gap-2 rounded-full py-2 text-sm transition-colors'
+const plainClasses = 'px-3 text-body hover:bg-subtle hover:text-ink'
+// The main button is a black pill (like a "Get started" button)
+const primaryClasses = 'bg-ink px-4 font-medium text-canvas hover:bg-ink/85'
 
 /**
  * One item on the right side of the header.
  *  - item.onSelect → a button that asks the home chat (Contact)
  *  - item.href     → a normal link (LinkedIn)
  */
-function HeaderItem({ item, onClick, className = '' }) {
+function HeaderItem({ item, onClick, className = '', isPrimary = false }) {
   const { t } = useLanguage()
   const Icon = item.icon
 
@@ -26,7 +28,7 @@ function HeaderItem({ item, onClick, className = '' }) {
           onClick?.()
           item.onSelect()
         }}
-        className={`${itemClasses} ${className}`}
+        className={`${itemClasses} ${isPrimary ? primaryClasses : plainClasses} ${className}`}
       >
         <Icon size={16} aria-hidden="true" />
         {item.label}
@@ -40,7 +42,7 @@ function HeaderItem({ item, onClick, className = '' }) {
       onClick={onClick}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${itemClasses} ${className}`}
+      className={`${itemClasses} ${isPrimary ? primaryClasses : plainClasses} ${className}`}
     >
       <Icon size={16} aria-hidden="true" />
       {item.label}
@@ -55,7 +57,7 @@ function HeaderItem({ item, onClick, className = '' }) {
  * answers, and then switches the language (see usePortfolioChat.js).
  * The dark pill slides to the active language with a shared `layoutId`.
  */
-function LanguageToggle({ onClick, placement }) {
+export function LanguageToggle({ onClick, placement }) {
   const { language, t } = useLanguage()
 
   return (
@@ -63,19 +65,19 @@ function LanguageToggle({ onClick, placement }) {
       type="button"
       onClick={onClick}
       aria-label={t('changeLanguage')}
-      className="flex items-center rounded-lg border border-line bg-surface p-0.5 font-mono text-[11px] font-medium transition-colors hover:border-line-strong"
+      className="flex items-center rounded-full border border-line bg-surface p-0.5 font-mono text-[11px] font-medium transition-colors hover:border-line-strong"
     >
       {['en', 'de'].map((code) => (
         <span
           key={code}
-          className={`relative z-10 rounded-md px-2 py-1 uppercase transition-colors duration-300 ${
+          className={`relative z-10 rounded-full px-2.5 py-1 uppercase transition-colors duration-300 ${
             language === code ? 'text-canvas' : 'text-muted'
           }`}
         >
           {language === code && (
             <motion.span
               layoutId={`language-pill-${placement}`}
-              className="absolute inset-0 -z-10 rounded-md bg-ink"
+              className="absolute inset-0 -z-10 rounded-full bg-ink"
               transition={{ type: 'spring', stiffness: 420, damping: 34 }}
             />
           )}
@@ -108,7 +110,7 @@ export default function AIHeader() {
   }
 
   // Show the bottom border only after scrolling, so the home screen
-  // stays a clean black surface.
+  // stays one clean surface.
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 8)
     handleScroll()
@@ -159,7 +161,7 @@ export default function AIHeader() {
         {/* Desktop / tablet */}
         <nav aria-label={t('profilesAndContact')} className="hidden items-center gap-1 sm:flex">
           {headerItems.map((item) => (
-            <HeaderItem key={item.label} item={item} />
+            <HeaderItem key={item.label} item={item} isPrimary={Boolean(item.onSelect)} />
           ))}
           <div className="ml-2">
             <LanguageToggle onClick={askToSwitchLanguage} placement="desktop" />

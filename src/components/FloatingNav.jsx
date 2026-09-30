@@ -71,7 +71,7 @@ export default function FloatingNav() {
           transition={{ duration: 0.25 }}
           className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4 sm:bottom-6"
         >
-          <ul className="flex items-center gap-0.5 rounded-2xl border border-line bg-surface p-1 shadow-lift sm:bg-surface/90 sm:backdrop-blur-md">
+          <ul className="flex items-center gap-0.5 rounded-full border border-line bg-surface p-1 shadow-lift sm:bg-surface/90 sm:backdrop-blur-md">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon
               const isActive = item.sections.includes(activeSection)
@@ -82,7 +82,7 @@ export default function FloatingNav() {
                   {isActive && (
                     <motion.span
                       layoutId="nav-active-pill"
-                      className="absolute inset-0 rounded-xl bg-ink"
+                      className="absolute inset-0 rounded-full bg-ink"
                       transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                     />
                   )}
@@ -90,7 +90,7 @@ export default function FloatingNav() {
                     href={item.href}
                     onClick={(event) => handleClick(event, item.href)}
                     aria-current={isActive ? 'true' : undefined}
-                    className={`relative flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-medium transition-colors duration-200 ${
+                    className={`relative flex items-center gap-1.5 rounded-full px-3 py-2 text-[13px] font-medium transition-colors duration-200 ${
                       isActive ? 'text-canvas' : 'text-muted hover:text-ink'
                     }`}
                   >

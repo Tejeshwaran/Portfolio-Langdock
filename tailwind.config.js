@@ -1,57 +1,70 @@
 /** @type {import('tailwindcss').Config} */
 
 // ─────────────────────────────────────────────────────────────
-// COLORS: change the whole look of the site here.
-// Theme: "Concept B — Command Prompt" (UI Ideas/) — warm near-black,
-// warm white, one orange accent.
-// Every component uses these names (bg-canvas, text-ink, border-line,
-// text-accent ...) instead of raw hex values.
+// COLORS: the site has a DARK and a LIGHT look (the sun/moon button in
+// the top bar switches, see src/theme/ThemeContext.jsx).
+//
+// The real colour values live in src/index.css as CSS variables, once
+// for light (:root) and once for dark ([data-theme='dark']). Here every
+// name only points at its variable, so one class like `bg-canvas` works
+// in both looks. `<alpha-value>` keeps opacity classes working
+// (e.g. `bg-ink/5`).
+//
+// Layout and feel follow the Langdock app (sidebar + chat), but with
+// Tejeshwaran's own logo, words and colours — nothing is copied.
 // ─────────────────────────────────────────────────────────────
+
+/** 'canvas' → 'rgb(var(--c-canvas) / <alpha-value>)' */
+const token = (name) => `rgb(var(--c-${name}) / <alpha-value>)`
+
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
-        canvas: '#121214', // page background (warm near-black)
-        surface: '#1A191E', // cards and panels
-        subtle: '#211F25', // quiet fills (chips, skeletons)
-        composer: '#1D1C21', // the prompt bar ("Ask anything")
-        bubble: '#26252B', // user chat bubbles
-        line: '#2A292F', // default borders
-        'line-strong': '#3B3A41', // hovered borders
-        ink: '#F0EFEA', // headings and main text (warm white)
-        body: '#C9C6C0', // paragraph text
-        muted: '#8F8D88', // labels, placeholders, secondary text
+        canvas: token('canvas'), // main background
+        sidebar: token('sidebar'), // the left sidebar
+        surface: token('surface'), // cards and panels
+        subtle: token('subtle'), // quiet fills (chips, hovers)
+        composer: token('composer'), // the prompt box
+        bubble: token('bubble'), // visitor chat bubbles
+        line: token('line'), // default borders
+        'line-strong': token('line-strong'), // hovered borders
+        ink: token('ink'), // headings, main text, the pill buttons
+        body: token('body'), // paragraph text
+        muted: token('muted'), // labels, placeholders, secondary text
         accent: {
-          DEFAULT: '#E0935F', // the orange accent (text, icons, cursor)
-          strong: '#F0B18B', // accent text on accent backgrounds / hover
-          soft: '#2A201A', // accent backgrounds (a dark orange tint)
-          fill: '#E0935F', // solid accent buttons (the voice button)
+          DEFAULT: token('accent'), // the accent (icons, cursor, progress)
+          strong: token('accent-strong'), // accent text on accent backgrounds
+          soft: token('accent-soft'), // accent backgrounds (a tint)
+          fill: token('accent-fill'), // solid accent buttons (the voice button)
         },
-        success: '#7FBF8F', // "online" dots, "copied" ticks
+        success: token('success'), // "online" dots, "copied" ticks
         // The intro pages use the same values under their own names (src/onboarding/)
         term: {
-          bg: '#121214', // warm near-black
-          panel: '#1A191E', // terminal panels
-          line: '#2A292F', // borders
-          ink: '#F0EFEA', // warm white text
-          muted: '#8F8D88', // secondary text
-          accent: '#E0935F', // the orange prompt colour
-          green: '#7FBF8F', // "online" dot and "ok"
+          bg: token('canvas'),
+          panel: token('surface'),
+          line: token('line'),
+          ink: token('ink'),
+          muted: token('muted'),
+          accent: token('accent'),
+          green: token('success'),
         },
       },
       fontFamily: {
-        // Concept B fonts: IBM Plex Sans for text, IBM Plex Mono for the
-        // "terminal" details, Fraunces (a serif) for big headlines
-        sans: ['"IBM Plex Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-        display: ['Fraunces', 'Georgia', 'serif'],
-        code: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
-        plex: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+        // Geist (free, Google Fonts) for text and headlines — a clean
+        // grotesque close to Langdock's style — and Geist Mono for the
+        // small "terminal" details. Headlines get tight letter spacing.
+        sans: ['Geist', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['"Geist Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        display: ['Geist', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        code: ['"Geist Mono"', 'ui-monospace', 'monospace'],
+        plex: ['Geist', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        card: 'inset 0 1px 0 rgba(255,255,255,0.03)',
-        lift: '0 18px 40px -16px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.04)',
+        // Flat design: almost no shadows, only a soft lift for floating things
+        card: '0 1px 2px rgb(0 0 0 / 0.04)',
+        lift: '0 16px 40px -18px rgb(0 0 0 / 0.35)',
       },
       keyframes: {
         // Voice button bars while listening

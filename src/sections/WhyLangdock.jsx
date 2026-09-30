@@ -24,7 +24,7 @@ export default function WhyLangdock() {
     <section id="why" aria-labelledby="why-title" className="py-12 sm:py-16">
       <motion.div ref={headingRef} style={headingFade} className="mb-10 text-center">
         <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-accent">{t('behindInterface')}</p>
-        <h2 id="why-title" className="mt-3 font-display text-[30px] font-medium leading-tight tracking-[-0.02em] text-ink sm:text-[40px]">
+        <h2 id="why-title" className="mt-3 font-display text-[30px] font-medium leading-tight tracking-[-0.035em] text-ink sm:text-[40px]">
           {why.sectionTitle}
         </h2>
       </motion.div>

@@ -12,14 +12,19 @@
 
 const EVENT_NAME = 'portfolio:ask'
 
-/** Ask the home chat a question from anywhere on the page. */
-export function requestAsk(question) {
-  window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: question }))
+/**
+ * Ask the home chat a question from anywhere on the page.
+ * options.instant = true sends it straight away, without typing it into
+ * the prompt box first (used when the visitor typed it themselves in the
+ * prompt box at the bottom of a slide). options.speak reads the answer aloud.
+ */
+export function requestAsk(question, options = {}) {
+  window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: { question, options } }))
 }
 
-/** Listen for questions. Returns a function that stops listening. */
+/** Listen for questions: handler(question, options). Returns a function that stops listening. */
 export function onAskRequest(handler) {
-  const listener = (event) => handler(event.detail)
+  const listener = (event) => handler(event.detail.question, event.detail.options)
   window.addEventListener(EVENT_NAME, listener)
   return () => window.removeEventListener(EVENT_NAME, listener)
 }

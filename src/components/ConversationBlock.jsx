@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import ChatMessage from './ChatMessage'
+import MessageActions from './MessageActions'
 import ThinkingDots from './ThinkingDots'
 import TypewriterText from './TypewriterText'
 import { RevealContext } from './PopIn'
@@ -60,6 +61,8 @@ export default function ConversationBlock({
   const isInView = useInView(blockRef, { once: true, margin: '0px 0px -20% 0px' })
   const reduceMotion = useReducedMotion()
   const [stage, setStage] = useState(STAGE.IDLE)
+  // Goes up by one each time "regenerate" is pressed
+  const [runId, setRunId] = useState(0)
 
   const scrollStyle = useScrollFade(blockRef)
 
@@ -86,6 +89,19 @@ export default function ConversationBlock({
     return () => timers.forEach(clearTimeout)
   }, [shouldStart, reduceMotion, delay])
 
+  // "Regenerate": think for a moment, then type the answer again
+  useEffect(() => {
+    if (runId === 0) return
+    const timer = setTimeout(() => setStage(STAGE.TYPING), THINKING_DURATION)
+    return () => clearTimeout(timer)
+  }, [runId])
+
+  function regenerate() {
+    if (reduceMotion) return
+    setStage(STAGE.THINKING)
+    setRunId((id) => id + 1)
+  }
+
   const showCards = stage === STAGE.DONE
 
   return (
@@ -101,7 +117,11 @@ export default function ConversationBlock({
         {question}
       </ChatMessage>
 
-      <ChatMessage role="ai" visible={stage >= STAGE.THINKING}>
+      <ChatMessage
+        role="ai"
+        visible={stage >= STAGE.THINKING}
+        actions={<MessageActions text={answer} onRegenerate={regenerate} visible={showCards} />}
+      >
         <div className="relative">
           {stage === STAGE.THINKING && (
             <div className="absolute left-0 top-0">
@@ -112,6 +132,7 @@ export default function ConversationBlock({
             text={answer}
             speed={TYPING_SPEED}
             start={stage >= STAGE.TYPING}
+            restartKey={runId}
             onComplete={() => setStage(STAGE.DONE)}
           />
         </div>

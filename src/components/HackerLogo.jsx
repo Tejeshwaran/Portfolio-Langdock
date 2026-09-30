@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────
 // HackerLogo — a small dotted ("halftone") hooded figure behind a laptop
-// that shows >_ . Drawn as an SVG on a 40 × 40 grid, in the orange accent.
+// that shows >_ . Drawn as an SVG on a 40 × 40 grid, in the accent colour.
 //
 // How it is built: the page places a dot every STEP units. A dot is drawn
 // only if it lies inside the hood and NOT inside the face or the laptop
