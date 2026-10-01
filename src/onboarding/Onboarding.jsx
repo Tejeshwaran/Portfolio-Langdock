@@ -7,18 +7,19 @@ import { useLanguage } from '../i18n/LanguageContext'
 import HackerLogo from '../components/HackerLogo'
 
 // ─────────────────────────────────────────────────────────────
-// Onboarding — two intro pages with small "command prompt" details
-// (mono labels, boot log), in the same look as the site.
+// Onboarding — the welcome page shown before the portfolio, with small
+// "command prompt" details (mono labels, boot log), in the same look as
+// the site: a short letter to the Langdock team, his quote, and a
+// "booting" terminal.
 //
-//   1. Hello     a short letter to the Langdock team + a "booting" terminal
-//   2. Summary   the short version of the résumé, then "Start the conversation"
-//
-// Move with Enter / arrow keys / mouse wheel / swipe; Esc or "Skip intro"
-// jumps straight to the portfolio. All texts are in portfolioData.js
+// Enter / arrow keys / mouse wheel / swipe / "Start the conversation" open
+// the portfolio; Esc or "Skip intro" does too. The code still supports more
+// pages (add them to `pages` and raise STEP_COUNT).
+// All texts are in portfolioData.js (onboarding) and uiText.js. All texts are in portfolioData.js
 // (onboarding) and uiText.js.
 // ─────────────────────────────────────────────────────────────
 
-const STEP_COUNT = 2
+const STEP_COUNT = 1
 const INPUT_LOCK_MS = 700 // one wheel flick = one page
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -67,7 +68,8 @@ function BootLog({ lines }) {
   return (
     <motion.div
       variants={itemVariants}
-      className="mt-10 rounded-xl border border-term-line bg-term-panel px-4 py-4 text-left font-code text-[12.5px] leading-7 sm:px-5 sm:text-[13px]"
+      // Decoration only: hidden on short screens, so the letter and the quote always fit
+      className="mt-8 rounded-xl border border-term-line bg-term-panel px-4 py-4 text-left font-code text-[12.5px] leading-7 sm:px-5 sm:text-[13px] [@media(max-height:859px)]:hidden"
       aria-label="Terminal"
     >
       {lines.map((line, index) => {
@@ -112,8 +114,9 @@ function BootLog({ lines }) {
   )
 }
 
-/** Page 1 — hello */
+/** Page 1 — hello: a short letter, his quote, and the "booting" terminal */
 function HelloPage({ content }) {
+  const { data } = useLanguage()
   return (
     <motion.div variants={listVariants} initial="enter" animate="shown" className="mx-auto max-w-2xl text-center">
       <Eyebrow>{content.eyebrow}</Eyebrow>
@@ -121,60 +124,13 @@ function HelloPage({ content }) {
       <motion.p variants={itemVariants} className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-term-muted">
         {content.body}
       </motion.p>
-      <motion.p variants={itemVariants} className="mt-5 font-code text-[13px] text-term-ink">
-        {content.signature}
-      </motion.p>
+      <motion.figure variants={itemVariants} className="mx-auto mt-6 max-w-xl border-l-2 border-term-accent pl-4 text-left">
+        <blockquote className="font-display text-[18px] font-medium leading-snug tracking-[-0.01em] text-term-ink sm:text-[20px]">
+          {data.personal.quote}
+        </blockquote>
+        <figcaption className="mt-2 font-code text-[12.5px] text-term-muted">{content.signature}</figcaption>
+      </motion.figure>
       <BootLog lines={content.bootLines} />
-    </motion.div>
-  )
-}
-
-/** Page 2 — the résumé in six lines, built from portfolioData.js */
-function SummaryPage({ content }) {
-  const { data, t } = useLanguage()
-  const [masters, bachelors] = data.education
-  const job = data.experience[0]
-  const pillo = data.projects.find((project) => project.id === 'pillo')
-
-  const rows = [
-    [t('summaryRole'), content.role],
-    [t('summaryEducation'), `${masters.degree} · ${masters.school}`],
-    ['', bachelors.degree],
-    [t('summaryExperience'), `${job.role} · ${job.company}`],
-    [t('summaryBuilding'), `${pillo.title} · ${t('withName', pillo.collaborator)}`],
-    [
-      t('summaryLanguages'),
-      data.languages.map((lang) => `${lang.name} ${lang.native ? `(${t('native')})` : lang.level}`).join(' · '),
-    ],
-    [t('summaryLocation'), data.personal.location],
-  ]
-
-  return (
-    <motion.div variants={listVariants} initial="enter" animate="shown" className="mx-auto max-w-3xl text-center">
-      <Eyebrow>{content.eyebrow}</Eyebrow>
-      <Title>{content.title}</Title>
-      <motion.dl
-        variants={itemVariants}
-        className="mt-10 overflow-hidden rounded-xl border border-term-line bg-term-panel text-left font-code text-[13px]"
-      >
-        {rows.map(([label, value], index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.35 + index * 0.07, duration: 0.35 }}
-            className={`grid grid-cols-[96px_1fr] gap-3 px-4 py-2.5 sm:grid-cols-[130px_1fr] sm:px-5 ${
-              label ? 'border-t border-term-line first:border-t-0' : ''
-            }`}
-          >
-            <dt className="text-term-muted">{label}</dt>
-            <dd className="text-term-ink">{value}</dd>
-          </motion.div>
-        ))}
-      </motion.dl>
-      <motion.p variants={itemVariants} className="mt-8 font-display text-[22px] font-medium tracking-[-0.02em] text-term-ink sm:text-[26px]">
-        {content.closing}
-      </motion.p>
     </motion.div>
   )
 }
@@ -310,7 +266,6 @@ export default function Onboarding({ onFinish }) {
 
   const pages = [
     <HelloPage key="hello" content={content.hello} />,
-    <SummaryPage key="summary" content={content.summary} />,
   ]
   const isLastStep = step === STEP_COUNT - 1
 
@@ -370,6 +325,9 @@ export default function Onboarding({ onFinish }) {
       <footer className="border-t border-term-line">
         <div className="mx-auto flex h-20 max-w-5xl items-center justify-between gap-4 px-5 sm:px-8">
           <div className="flex items-center gap-4">
+            {/* Progress — only when there is more than one page */}
+            {STEP_COUNT > 1 && (
+              <>
             <div className="flex gap-1.5" aria-hidden="true">
               {Array.from({ length: STEP_COUNT }, (_, index) => (
                 <span
@@ -383,7 +341,9 @@ export default function Onboarding({ onFinish }) {
             <span className="hidden whitespace-nowrap font-code text-[12px] text-term-muted sm:inline">
               {String(step + 1).padStart(2, '0')} / {String(STEP_COUNT).padStart(2, '0')}
             </span>
-            <span className="hidden font-code text-[11px] text-term-muted/70 lg:inline">{t('onboardingHint')}</span>
+              </>
+            )}
+            <span className="hidden font-code text-[11px] text-term-muted/70 sm:inline">{t('onboardingHint')}</span>
           </div>
 
           <div className="flex items-center gap-2">

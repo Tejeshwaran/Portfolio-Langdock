@@ -190,8 +190,13 @@ export function SlideDeckProvider({ slides, children }) {
   const slidesRef = useRef(slides)
   slidesRef.current = slides
 
-  /** Show a slide by index or id. Resolves when the fade has finished. */
-  function goTo(target) {
+  /**
+   * Show a slide by index or id. Resolves when the fade has finished.
+   * options.fromGesture: true when a scroll / swipe / arrow key moved back —
+   * then the previous slide opens at its bottom, where you left it.
+   * Jumps from the menu or a button always open a slide at its top.
+   */
+  function goTo(target, options = {}) {
     const list = slidesRef.current
     const index = typeof target === 'number' ? target : list.findIndex((slide) => slide.id === target)
     const from = activeIndexRef.current
@@ -201,10 +206,8 @@ export function SlideDeckProvider({ slides, children }) {
     ignoreInputUntilRef.current = performance.now() + TRANSITION_MS
     wheelRef.current.sum = 0
 
-    // Going forward starts the next slide at its top; going back shows the
-    // previous slide at its bottom, where you left it.
     const nextSlide = slideRefs.current[index]
-    if (nextSlide) nextSlide.scrollTop = index > from ? 0 : nextSlide.scrollHeight
+    if (nextSlide) nextSlide.scrollTop = options.fromGesture && index < from ? nextSlide.scrollHeight : 0
 
     // Keyboard focus must not stay inside a slide that is now hidden
     if (slideRefs.current[from]?.contains(document.activeElement)) nextSlide?.focus({ preventScroll: true })
@@ -259,7 +262,7 @@ export function SlideDeckProvider({ slides, children }) {
       if (now - wheel.lastTime > 250) wheel.sum = 0
       wheel.lastTime = now
       wheel.sum += event.deltaY
-      if (Math.abs(wheel.sum) >= WHEEL_THRESHOLD) goToRef.current(activeIndexRef.current + direction)
+      if (Math.abs(wheel.sum) >= WHEEL_THRESHOLD) goToRef.current(activeIndexRef.current + direction, { fromGesture: true })
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
@@ -290,8 +293,8 @@ export function SlideDeckProvider({ slides, children }) {
       const distanceY = start.y - touch.clientY // positive = finger moved up = next
       const distanceX = start.x - touch.clientX
       if (Math.abs(distanceY) < SWIPE_THRESHOLD || Math.abs(distanceX) > Math.abs(distanceY)) return
-      if (distanceY > 0 && !start.canScrollDown) goToRef.current(activeIndexRef.current + 1)
-      if (distanceY < 0 && !start.canScrollUp) goToRef.current(activeIndexRef.current - 1)
+      if (distanceY > 0 && !start.canScrollDown) goToRef.current(activeIndexRef.current + 1, { fromGesture: true })
+      if (distanceY < 0 && !start.canScrollUp) goToRef.current(activeIndexRef.current - 1, { fromGesture: true })
     }
 
     window.addEventListener('touchstart', handleTouchStart, { passive: true })
@@ -325,7 +328,7 @@ export function SlideDeckProvider({ slides, children }) {
         slide.scrollBy({ top: direction * slide.clientHeight * 0.8, behavior: reduceMotion ? 'auto' : 'smooth' })
         return
       }
-      if (performance.now() >= ignoreInputUntilRef.current) goToRef.current(activeIndexRef.current + direction)
+      if (performance.now() >= ignoreInputUntilRef.current) goToRef.current(activeIndexRef.current + direction, { fromGesture: true })
     }
 
     window.addEventListener('keydown', handleKeyDown)

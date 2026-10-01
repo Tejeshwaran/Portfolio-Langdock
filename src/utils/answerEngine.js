@@ -34,8 +34,8 @@ const LANGUAGE_WORDS = {
 
 // Words that turn a question into "does he know X?"
 const KNOW_WORDS = [
-  'know', 'use ', 'uses', 'used', 'experience with', 'experienced', 'familiar', 'can he', 'does he', 'worked with',
-  'work with', 'good at', 'skilled', 'kennt', 'kann er', 'beherrscht', 'erfahrung mit', 'nutzt', 'arbeitet er mit',
+  'know', 'use ', 'uses', 'used', 'experience', 'erfahrung', 'experienced', 'familiar', 'can he', 'does he', 'worked with',
+  'work with', 'good at', 'skilled', 'kennt', 'kann er', 'beherrscht', 'nutzt', 'arbeitet er mit',
   'kenntnisse in',
 ]
 

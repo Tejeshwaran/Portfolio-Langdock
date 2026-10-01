@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The same hooded-figure mark as the chat avatar (src/components/AssistantMark.jsx) -->
+  <rect width="32" height="32" rx="8" fill="#1F2026"/>
+  <g transform="translate(4 4)">
+    <path fill="#ECECEE" fill-rule="evenodd" d="M12 2.5C7.3 2.5 4.5 6.2 4.5 10.8V21.5h15V10.8c0-4.6-2.8-8.3-7.5-8.3Zm-3.6 9.9a3.6 4.4 0 1 0 7.2 0a3.6 4.4 0 1 0-7.2 0Z"/>
+    <path d="M10.3 11.1l1.5 1.2-1.5 1.2" fill="none" stroke="#ECECEE" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.6 13.6h1.3" fill="none" stroke="#ECECEE" stroke-width="1.1" stroke-linecap="round"/>
+  </g>
+</svg>

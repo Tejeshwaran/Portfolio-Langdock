@@ -19,8 +19,8 @@ const STAGE = {
 // Timings in milliseconds. Kept short on purpose: it should feel like
 // the AI responds, but a recruiter should never wait for it
 // (a 300-character answer is fully typed in about 1.2 seconds).
-const QUESTION_TO_THINKING = 200
-const THINKING_DURATION = 300
+const QUESTION_TO_THINKING = 150
+const THINKING_DURATION = 250
 const TYPING_SPEED = 4 // ms per character
 
 /**
@@ -93,7 +93,10 @@ export default function ConversationBlock({
     setRunId((id) => id + 1)
   }
 
-  const showCards = stage === STAGE.DONE
+  // The cards appear as soon as the answer starts typing, so nobody has
+  // to wait for the text before the facts are on screen.
+  const showCards = stage >= STAGE.TYPING
+  const isAnswerDone = stage === STAGE.DONE
 
   return (
     <motion.div ref={blockRef} className="space-y-5">
@@ -112,7 +115,7 @@ export default function ConversationBlock({
       <ChatMessage
         role="ai"
         visible={stage >= STAGE.THINKING}
-        actions={<MessageActions text={answer} onRegenerate={regenerate} visible={showCards} />}
+        actions={<MessageActions text={answer} onRegenerate={regenerate} visible={isAnswerDone} />}
       >
         <div className="relative">
           {stage === STAGE.THINKING && (

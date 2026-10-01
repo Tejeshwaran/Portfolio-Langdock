@@ -9,6 +9,7 @@ import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
 import { ThemeProvider } from './theme/ThemeContext'
 import Hero from './sections/Hero'
 import About from './sections/About'
+import AiJourney, { JOURNEY_PART_COUNT } from './sections/AiJourney'
 import Education from './sections/Education'
 import Experience from './sections/Experience'
 import Projects from './sections/Projects'
@@ -27,9 +28,10 @@ const Onboarding = lazy(() => import('./onboarding/Onboarding'))
  * sidebar, top bar and a chat area where every part is a slide. Scrolling
  * fades from one slide to the next (SlideDeck.jsx).
  *
- * The order follows what a recruiter wants to know first:
- * who → what he built → experience → skills → education → why Langdock →
- * languages → beyond IT → contact.
+ * The order follows what a recruiter for the AI Associate program wants to
+ * know first: who → AI journey (curiosity, learning, approach) → what he
+ * built → experience → skills → education → why the program → languages →
+ * beyond IT → contact.
  *
  * <MotionConfig reducedMotion="user"> tells Framer Motion to respect the
  * visitor's "reduce motion" system setting: movement (x/y/scale) is turned
@@ -42,6 +44,10 @@ function Page() {
   const slides = [
     { id: 'home', element: <Hero />, fullBleed: true },
     { id: 'about', element: <About /> },
+    ...Array.from({ length: JOURNEY_PART_COUNT }, (_, index) => ({
+      id: groupSlideId('journey', index),
+      element: <AiJourney partIndex={index} />,
+    })),
     // One slide per project, degree and skill group
     ...data.projects.map((project, index) => ({
       id: groupSlideId('projects', index),

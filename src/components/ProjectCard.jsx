@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown, ChevronRight, Sparkles } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, ChevronRight, Sparkles } from 'lucide-react'
 import Badge from './Badge'
 import PopIn from './PopIn'
 import { useLanguage } from '../i18n/LanguageContext'
@@ -102,6 +102,25 @@ export default function ProjectCard({ project }) {
           </PopIn>
         ))}
       </dl>
+
+      {project.links?.length > 0 && (
+        <ul className="mt-4 flex flex-wrap gap-2">
+          {project.links.map((link) => (
+            <li key={link.href}>
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-accent transition-colors hover:text-accent-strong"
+              >
+                {link.label}
+                <ArrowUpRight size={15} aria-hidden="true" />
+                <span className="sr-only">{t('opensInNewTab')}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {project.capabilities?.length > 0 && (
         <>

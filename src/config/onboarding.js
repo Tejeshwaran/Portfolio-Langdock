@@ -8,7 +8,7 @@
 // For quick testing you can hide it with ?intro=0 at the end of the address.
 // ─────────────────────────────────────────────────────────────
 
-export const ONBOARDING_ENABLED = false
+export const ONBOARDING_ENABLED = true
 
 export function shouldShowOnboarding() {
   if (!ONBOARDING_ENABLED) return false

@@ -8,8 +8,10 @@ import {
   FileText,
   FolderKanban,
   GraduationCap,
+  HelpCircle,
   Languages,
   Layers,
+  Lightbulb,
   Mail,
   Mic,
   Plus,
@@ -34,6 +36,8 @@ export const TOPIC_ICONS = {
   about: UserRound,
   why: Sparkles,
   cv: FileText,
+  learning: Lightbulb,
+  curiosity: HelpCircle,
 }
 
 /** Four small bars that bounce while voice mode is listening */

@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDown, Download, Layers } from 'lucide-react'
+import { ArrowDown, ArrowRight, FileText, Github, Layers, Linkedin, Mail } from 'lucide-react'
 import ChatThread from '../components/ChatThread'
 import ComposerExtras from '../components/ComposerExtras'
 import PromptComposer, { TOPIC_ICONS } from '../components/PromptComposer'
@@ -8,6 +8,11 @@ import { useHomeChat } from '../components/HomeChat'
 import { useSlideDeck } from '../components/SlideDeck'
 import { onAskRequest, onLanguageSwitch } from '../utils/askEvents'
 import { useLanguage } from '../i18n/LanguageContext'
+
+const primaryAction =
+  'inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-[13.5px] font-medium text-canvas transition-opacity hover:opacity-90'
+const secondaryAction =
+  'inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-2 text-[13.5px] text-body transition-colors hover:border-line-strong hover:bg-ink/5 hover:text-ink'
 
 // The heading appears word by word, like text being generated.
 // The parent staggers its children; each word fades and rises a little.
@@ -21,12 +26,15 @@ const headingWord = {
  * The home screen — the start page of an AI workspace, and at the same
  * time the answer to "who is this?" within a few seconds:
  *
- *   [Applying for AI Associate at Langdock · CV ↓]
- *   Hi, I'm Tejeshwaran.
- *   Data & AI-focused developer in Berlin …
- *   [M.Sc. Data Analytics] [Python · SQL · Tableau] [React] [EN C1 · DE B2]
- *   [ prompt box ]  [CV & projects · Connect with him]
- *   [Tell me about him] [Show his projects] [Experience] [Why Langdock?] …
+ *   [Applying for AI Associate · Langdock, Berlin]
+ *   Tejeshwaran Manoharan
+ *   Data & AI-focused developer
+ *   Building with data, web technologies and AI — and always trying to
+ *   understand what happens under the hood.
+ *   M.Sc. Data Analytics · Python · SQL · Tableau · React · EN C1 · DE B2
+ *   [Explore my work →] [View CV] [GitHub] [LinkedIn] [Contact]
+ *   [ prompt box ("Ask my portfolio") ]  [CV & projects · Connect with him]
+ *   [Tell me about him] [What is he learning?] [Why this role?] …
  *
  * Two states:
  *  1. Empty: the start page above.
@@ -103,6 +111,16 @@ export default function Hero() {
     chat.ask(question, { speak: fromVoice })
   }
 
+  // The actions under the headline. Empty links (e.g. LinkedIn) are left out.
+  const { personal } = data
+  const heroActions = [
+    { label: t('exploreWork'), icon: ArrowRight, onClick: () => deck.goTo('projects'), isPrimary: true },
+    { label: t('viewCv'), icon: FileText, href: personal.cv, isExternal: true },
+    { label: 'GitHub', icon: Github, href: personal.github, isExternal: true },
+    { label: 'LinkedIn', icon: Linkedin, href: personal.linkedin, isExternal: true },
+    { label: t('contactMe'), icon: Mail, href: `mailto:${personal.email}` },
+  ].filter((action) => action.href || action.onClick)
+
   return (
     <section id="home" aria-label={t('heroLabel')} className="relative flex h-full min-h-[420px] flex-col">
       {/* Top area: empty space (state 1) or the chat thread (state 2) */}
@@ -131,25 +149,21 @@ export default function Hero() {
             variants={headingContainer}
             initial="hidden"
             animate="shown"
-            className="mb-6 text-center sm:mb-7"
+            className="mb-5 text-center sm:mb-6"
           >
             {/* The application, like the status pill at the top of AI apps */}
             <motion.p
               variants={headingWord}
-              className="mb-6 inline-flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-full bg-surface px-4 py-2 text-[13px] text-body sm:mb-8 sm:text-[13.5px]"
+              className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full bg-surface px-4 py-1.5 text-[12.5px] text-body sm:mb-6 sm:text-[13px]"
             >
-              {hero.badge}
-              <a
-                href={data.personal.cv}
-                download=""
-                className="inline-flex items-center gap-1 font-medium text-accent transition-colors hover:text-accent-strong"
-              >
-                {t('cvShort')}
-                <Download size={13} aria-hidden="true" />
-              </a>
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-success" aria-hidden="true" />
+              <span>
+                {t('applyingFor')} <strong className="font-semibold text-ink">{data.personal.targetRole}</strong> ·{' '}
+                {data.personal.targetPlace}
+              </span>
             </motion.p>
 
-            <h1 className="font-display text-[30px] font-medium leading-[1.12] tracking-[-0.03em] text-ink sm:text-[38px]">
+            <h1 className="font-display text-[30px] font-medium leading-[1.1] tracking-[-0.03em] text-ink sm:text-[40px]">
               {/* The space sits BETWEEN the word boxes: a space at the end of an
                   inline-block would be dropped by the browser */}
               {headingWords.map((word, index) => (
@@ -161,18 +175,42 @@ export default function Hero() {
                 </Fragment>
               ))}
             </h1>
+            <motion.p variants={headingWord} className="mt-2 text-[17px] font-medium text-accent sm:text-lg">
+              {hero.role}
+            </motion.p>
             <motion.p
               variants={headingWord}
-              className="mx-auto mt-3 max-w-xl text-balance text-[15px] leading-relaxed text-body sm:text-base"
+              className="mx-auto mt-2 max-w-xl text-balance text-[15px] leading-relaxed text-body sm:text-base"
             >
               {hero.subheading}
             </motion.p>
 
-            {/* Quick facts: degree, stack, languages */}
-            <motion.ul variants={headingWord} className="mt-4 flex flex-wrap justify-center gap-1.5" aria-label={t('quickFacts')}>
-              {hero.highlights.map((fact) => (
-                <li key={fact} className="rounded-full border border-line px-3 py-1 text-[12.5px] text-muted">
-                  {fact}
+            {/* Quick facts: degree, stack, languages — one quiet line */}
+            <motion.p variants={headingWord} className="mx-auto mt-3 max-w-xl text-[12.5px] text-muted">
+              <span className="sr-only">{t('quickFacts')}: </span>
+              {hero.highlights.join(' · ')}
+            </motion.p>
+
+            {/* Direct actions — nobody has to hunt for the CV or contact */}
+            <motion.ul variants={headingWord} className="mt-5 flex flex-wrap justify-center gap-2">
+              {heroActions.map(({ label, icon: Icon, href, onClick, isPrimary, isExternal }) => (
+                <li key={label}>
+                  {href ? (
+                    <a
+                      href={href}
+                      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                      className={isPrimary ? primaryAction : secondaryAction}
+                    >
+                      <Icon size={15} aria-hidden="true" />
+                      {label}
+                      {isExternal && <span className="sr-only">{t('opensInNewTab')}</span>}
+                    </a>
+                  ) : (
+                    <button type="button" onClick={onClick} className={isPrimary ? primaryAction : secondaryAction}>
+                      {label}
+                      <Icon size={15} aria-hidden="true" />
+                    </button>
+                  )}
                 </li>
               ))}
             </motion.ul>
