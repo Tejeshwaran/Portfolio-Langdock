@@ -136,6 +136,7 @@ npx vercel deploy --prod
 - **Interface words (EN / DE):** `src/i18n/uiText.js`.
 - **CV file:** replace the PDF in `public/cv/` (keep the file name).
 - **Colours:** `src/index.css` (one block for light, one for dark).
-- **Welcome page:** switch off with `ONBOARDING_ENABLED` in `src/config/onboarding.js`
-  (or add `?intro=0` to the address to skip it once).
+- **Welcome page:** it lies above the chat — scroll down to leave it, scroll
+  up on the first slide to see it again. Switch it off with `ONBOARDING_ENABLED`
+  in `src/config/onboarding.js` (or add `?intro=0` to the address to skip it once).
 - **The quote:** `personal.quote` in `src/data/portfolioData.js`.

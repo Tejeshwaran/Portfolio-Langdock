@@ -167,13 +167,18 @@ function SlideDots({ count, activeIndex, onSelect }) {
  *     further input is ignored — so one flick of a trackpad moves exactly
  *     one slide.
  *
- * Props: slides = [{ id, element, fullBleed }]
+ * Props:
+ *  paused         true = ignore every scroll, swipe and key (the welcome
+ *                 page lies on top of the slides)
+ *  onBeforeStart  called when the visitor scrolls up on the FIRST slide
+ *                 (App.jsx opens the welcome page again)
+ *  slides = [{ id, element, fullBleed }]
  *  - id         used by the navigation (e.g. 'skills')
  *  - element    what the slide shows (a section component)
  *  - fullBleed  true = no padding / centering (the home screen)
  *  - wide       true = a little wider than the other slides (languages, equation)
  */
-export function SlideDeckProvider({ slides, children }) {
+export function SlideDeckProvider({ slides, paused = false, onBeforeStart, children }) {
   const reduceMotion = useReducedMotion()
   const [activeIndex, setActiveIndex] = useState(0)
   // The slide that is fading out right now (it must stay drawn until it is gone)
@@ -189,6 +194,16 @@ export function SlideDeckProvider({ slides, children }) {
   // The newest slides list, readable from event listeners
   const slidesRef = useRef(slides)
   slidesRef.current = slides
+  const pausedRef = useRef(paused)
+  pausedRef.current = paused
+  const onBeforeStartRef = useRef(onBeforeStart)
+  onBeforeStartRef.current = onBeforeStart
+
+  // Back from the welcome page: a trackpad may still be "gliding" — that
+  // must not move the slides
+  useEffect(() => {
+    if (!paused) ignoreInputUntilRef.current = performance.now() + TRANSITION_MS
+  }, [paused])
 
   /**
    * Show a slide by index or id. Resolves when the fade has finished.
@@ -200,6 +215,13 @@ export function SlideDeckProvider({ slides, children }) {
     const list = slidesRef.current
     const index = typeof target === 'number' ? target : list.findIndex((slide) => slide.id === target)
     const from = activeIndexRef.current
+
+    // Scrolling up on the first slide: show what lies before it
+    if (index < 0 && typeof target === 'number' && options.fromGesture && onBeforeStartRef.current) {
+      ignoreInputUntilRef.current = performance.now() + TRANSITION_MS
+      onBeforeStartRef.current()
+      return Promise.resolve()
+    }
     if (index < 0 || index >= list.length || index === from) return Promise.resolve()
 
     activeIndexRef.current = index
@@ -231,6 +253,7 @@ export function SlideDeckProvider({ slides, children }) {
   // Mouse wheel and trackpad
   useEffect(() => {
     function handleWheel(event) {
+      if (pausedRef.current) return // the welcome page handles the wheel
       if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return // sideways: ignore
       if (isIgnored(event.target)) return // e.g. the sidebar: let it scroll normally
       const now = performance.now()
@@ -273,7 +296,7 @@ export function SlideDeckProvider({ slides, children }) {
   useEffect(() => {
     function handleTouchStart(event) {
       touchRef.current = null
-      if (event.touches.length !== 1 || isIgnored(event.target)) return
+      if (pausedRef.current || event.touches.length !== 1 || isIgnored(event.target)) return
       const touch = event.touches[0]
       const slide = slideRefs.current[activeIndexRef.current]
       // Remember whether the content could still scroll when the finger went down
@@ -308,6 +331,7 @@ export function SlideDeckProvider({ slides, children }) {
   // Keyboard: ↓ / PageDown / Space = next, ↑ / PageUp / Shift+Space = back
   useEffect(() => {
     function handleKeyDown(event) {
+      if (pausedRef.current) return
       const target = event.target
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable) return
       if (event.altKey || event.ctrlKey || event.metaKey) return

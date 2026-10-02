@@ -1,10 +1,10 @@
-import { Suspense, lazy, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import AppShell from './components/AppShell'
 import { HomeChatProvider } from './components/HomeChat'
 import { SlideDeckProvider } from './components/SlideDeck'
 import { groupSlideId } from './components/appNav'
-import { shouldShowOnboarding } from './config/onboarding'
+import { ONBOARDING_ENABLED, shouldShowOnboarding } from './config/onboarding'
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext'
 import { ThemeProvider } from './theme/ThemeContext'
 import Hero from './sections/Hero'
@@ -19,8 +19,8 @@ import BeyondWork from './sections/BeyondWork'
 import WhyLangdock from './sections/WhyLangdock'
 import Footer from './sections/Footer'
 
-// The intro pages are switched off by default (config/onboarding.js), so
-// they are only downloaded when they are switched on.
+// The welcome page is its own small download (config/onboarding.js can
+// switch it off completely).
 const Onboarding = lazy(() => import('./onboarding/Onboarding'))
 
 /**
@@ -40,6 +40,19 @@ const Onboarding = lazy(() => import('./onboarding/Onboarding'))
 function Page() {
   const { data } = useLanguage()
   const [isIntroOpen, setIsIntroOpen] = useState(shouldShowOnboarding)
+  // true once the visitor has gone from the welcome page to the chat —
+  // then the welcome page comes back from above when they scroll up
+  const [hasLeftIntro, setHasLeftIntro] = useState(false)
+
+  function closeIntro() {
+    setIsIntroOpen(false)
+    setHasLeftIntro(true)
+  }
+
+  // Back from the welcome page: keyboard focus moves to the chat area
+  useEffect(() => {
+    if (!isIntroOpen && hasLeftIntro) document.getElementById('main')?.focus({ preventScroll: true })
+  }, [isIntroOpen, hasLeftIntro])
 
   const slides = [
     { id: 'home', element: <Hero />, fullBleed: true },
@@ -70,21 +83,41 @@ function Page() {
 
   return (
     <MotionConfig reducedMotion="user">
-      {/* mode="wait": the intro fades out completely, then the portfolio starts */}
-      <AnimatePresence mode="wait">
-        {isIntroOpen ? (
+      {/* The portfolio is always there. While the welcome page lies on top
+          of it, it is hidden and can't be clicked or focused (inert) — and
+          the chat and the current slide are kept for when the visitor
+          comes back down. */}
+      {/* Like the slides: the old page fades out first, then the new one fades in */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={
+          isIntroOpen
+            ? { opacity: 0, transition: { duration: 0.3, ease: 'easeIn' } }
+            : { opacity: 1, transition: { duration: 0.5, delay: 0.25 } }
+        }
+        aria-hidden={isIntroOpen || undefined}
+        {...(isIntroOpen ? { inert: '' } : {})}
+      >
+        {/* One shared home chat for the home screen, sidebar and top bar */}
+        <HomeChatProvider>
+          {/* Scrolling up on the first slide opens the welcome page again */}
+          <SlideDeckProvider
+            slides={slides}
+            paused={isIntroOpen}
+            onBeforeStart={ONBOARDING_ENABLED ? () => setIsIntroOpen(true) : undefined}
+          >
+            <AppShell />
+          </SlideDeckProvider>
+        </HomeChatProvider>
+      </motion.div>
+
+      {/* The welcome page: scroll down = it moves up and away, scroll up on
+          the chat's first slide = it comes back down */}
+      <AnimatePresence>
+        {isIntroOpen && (
           <Suspense key="intro" fallback={null}>
-            <Onboarding onFinish={() => setIsIntroOpen(false)} />
+            <Onboarding fromAbove={hasLeftIntro} onFinish={closeIntro} />
           </Suspense>
-        ) : (
-          <motion.div key="portfolio" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-            {/* One shared home chat for the home screen, sidebar and top bar */}
-            <HomeChatProvider>
-              <SlideDeckProvider slides={slides}>
-                <AppShell />
-              </SlideDeckProvider>
-            </HomeChatProvider>
-          </motion.div>
         )}
       </AnimatePresence>
     </MotionConfig>

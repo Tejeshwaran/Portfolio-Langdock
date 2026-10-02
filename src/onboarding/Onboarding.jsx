@@ -13,10 +13,10 @@ import HackerLogo from '../components/HackerLogo'
 // "booting" terminal.
 //
 // Enter / arrow keys / mouse wheel / swipe / "Start the conversation" open
-// the portfolio; Esc or "Skip intro" does too. The code still supports more
-// pages (add them to `pages` and raise STEP_COUNT).
-// All texts are in portfolioData.js (onboarding) and uiText.js. All texts are in portfolioData.js
-// (onboarding) and uiText.js.
+// the portfolio; Esc or "Skip intro" does too. It lies ABOVE the chat:
+// scrolling up on the chat's first slide brings it back (App.jsx).
+// The code still supports more pages (add them to `pages` and raise
+// STEP_COUNT). All texts are in portfolioData.js (onboarding) and uiText.js.
 // ─────────────────────────────────────────────────────────────
 
 const STEP_COUNT = 1
@@ -168,9 +168,12 @@ function LanguageSwitch() {
 
 /**
  * Onboarding — the full-screen intro.
- * Props: onFinish() — called by "Start the conversation", "Skip intro" or Esc.
+ * Props:
+ *  onFinish()  called by "Start the conversation", "Skip intro" or Esc
+ *  fromAbove   true = the visitor scrolled back up from the chat, so the
+ *              page slides down into view (first visit: it only fades in)
  */
-export default function Onboarding({ onFinish }) {
+export default function Onboarding({ onFinish, fromAbove = false }) {
   const { data, t } = useLanguage()
   const content = data.onboarding
   const [step, setStep] = useState(0)
@@ -179,7 +182,9 @@ export default function Onboarding({ onFinish }) {
   const scrollAreaRef = useRef(null)
   const containerRef = useRef(null)
   const stepRef = useRef(0)
-  const ignoreInputUntilRef = useRef(0)
+  // A short pause at the start: a trackpad still "gliding" from the scroll
+  // that opened this page must not close it again
+  const ignoreInputUntilRef = useRef(performance.now() + INPUT_LOCK_MS)
   const touchRef = useRef(null)
 
   /** Go one page forward (+1) or back (-1). After the last page: finish. */
@@ -276,10 +281,12 @@ export default function Onboarding({ onFinish }) {
       role="dialog"
       aria-modal="true"
       aria-label={t('onboardingLabel')}
-      // The whole intro fades out when the portfolio starts
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, transition: { duration: 0.5 } }}
-      exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeIn' } }}
+      // Like a page above the chat: it moves up and away when the portfolio
+      // starts, and comes back down when the visitor scrolls up again
+      initial={{ opacity: 0, y: fromAbove ? -48 : 0 }}
+      // (coming back: it waits until the chat has faded out)
+      animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE, delay: fromAbove ? 0.3 : 0 } }}
+      exit={{ opacity: 0, y: -48, transition: { duration: 0.35, ease: 'easeIn' } }}
       className="fixed inset-0 z-[60] flex flex-col bg-term-bg font-plex text-term-ink focus:outline-none"
     >
       {/* Top bar, as in the concept: name_ on the left, status on the right */}
