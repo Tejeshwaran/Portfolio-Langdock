@@ -31,12 +31,14 @@ const personal = {
   address: 'Am Kinderdorf 53, 14089 Berlin',
   birthDate: L('16 August 2002', '16. August 2002'),
   github: 'https://github.com/Tejeshwaran',
-  repository: 'https://github.com/Tejeshwaran/Portfolio-Langdock',
   // Add your LinkedIn profile URL here. While it is empty, the LinkedIn
   // links are hidden automatically everywhere on the site.
   linkedin: '',
-  // The CV in the site's language (files in public/cv/)
-  cv: L('cv/Tejeshwaran-Manoharan-CV.pdf', 'cv/Tejeshwaran-Manoharan-Lebenslauf.pdf'),
+  // His personal portfolio website (a separate project, on GitHub Pages)
+  website: 'https://tejeshwaran.github.io/portfolio-website/',
+  websiteRepository: 'https://github.com/Tejeshwaran/portfolio-website',
+  // The current CV (German, October 2026) — file in public/cv/
+  cv: 'cv/Tejeshwaran-Manoharan-Lebenslauf.pdf',
   // The application this site was made for
   targetRole: 'AI Associate',
   targetCompany: 'Langdock',
@@ -117,96 +119,10 @@ const experience = [
 // Only facts from the CV or the project itself — no invented results.
 const projects = [
   {
-    id: 'portfolio-langdock',
-    number: '01',
-    type: 'web',
-    question: L('What has he built?', 'Was hat er gebaut?'),
-    answer: L(
-      'The portfolio you are using right now, built together with Claude AI: a chat-style interface where every answer comes from structured CV data. There is no LLM behind it, so it cannot invent facts — and Think mode shows each step of how an answer is found.',
-      'Das Portfolio, das du gerade benutzt, gemeinsam mit Claude AI gebaut: eine Chat-Oberfläche, in der jede Antwort aus strukturierten Lebenslaufdaten kommt. Dahinter steckt kein LLM, deshalb kann es nichts erfinden — und der Nachdenk-Modus zeigt jeden Schritt, wie eine Antwort gefunden wird.',
-    ),
-    title: 'Portfolio-Langdock',
-    subtitle: L('This site: an AI-workspace-style portfolio with a grounded Q&A engine.', 'Diese Website: ein Portfolio im Stil eines KI-Arbeitsbereichs, mit einer faktentreuen Frage-Antwort-Engine.'),
-    collaborator: 'Claude AI',
-    tech: ['React', 'JavaScript', 'Tailwind CSS', 'Vite', 'Framer Motion'],
-    caseStudy: {
-      problem: L(
-        'A PDF CV is hard to explore. A recruiter should get the facts in seconds — and be able to ask questions.',
-        'Ein PDF-Lebenslauf ist schwer zu erkunden. Recruiter sollen die Fakten in Sekunden sehen — und Fragen stellen können.',
-      ),
-      approach: L(
-        'One data file holds every fact in English and German. The page and the chat answers are generated from it; a local engine matches questions to answers and links to the right part.',
-        'Eine Datendatei enthält jeden Fakt auf Englisch und Deutsch. Seite und Chat-Antworten werden daraus erzeugt; eine lokale Engine ordnet Fragen den Antworten zu und verlinkt den passenden Teil.',
-      ),
-      result: L(
-        'Live on Vercel. Page and chat can never disagree, and unknown questions get an honest "that is not in his CV".',
-        'Live auf Vercel. Seite und Chat können sich nie widersprechen, und unbekannte Fragen bekommen ein ehrliches „das steht nicht in seinem Lebenslauf“.',
-      ),
-    },
-    pipeline: [
-      L('Question', 'Frage'),
-      L('Keyword & skill match', 'Stichwort- & Skill-Abgleich'),
-      L('Structured CV data', 'Strukturierte Lebenslaufdaten'),
-      L('Answer + link', 'Antwort + Link'),
-    ],
-    capabilities: [
-      L('Suggested prompts that double as navigation', 'Vorgeschlagene Fragen, die zugleich navigieren'),
-      L('Think mode shows the real matching steps', 'Nachdenk-Modus zeigt die echten Schritte'),
-      L('Direct skill questions ("Does he know React?")', 'Direkte Skill-Fragen („Kennt er React?“)'),
-      L('English / German, dark / light', 'Englisch / Deutsch, dunkel / hell'),
-      L('Keyboard and screen-reader friendly', 'Mit Tastatur und Screenreader bedienbar'),
-      L('Voice input with the Web Speech API', 'Spracheingabe über die Web Speech API'),
-    ],
-    links: [{ label: L('Code on GitHub', 'Code auf GitHub'), href: personal.repository }],
-  },
-  {
-    id: 'pillo',
-    number: '02',
-    type: 'app',
-    question: L('What is he building right now?', 'Woran arbeitet er gerade?'),
-    answer: L(
-      'Right now he is building Pillo for Windows, together with Claude AI: press a hotkey, speak, and your words appear wherever your cursor is. The speech model runs directly on the device.',
-      'Gerade entwickelt er gemeinsam mit Claude AI „Pillo für Windows“: Tastenkürzel drücken, sprechen — und die Worte erscheinen dort, wo der Cursor steht. Das Sprachmodell läuft direkt auf dem Gerät.',
-    ),
-    title: L('Pillo for Windows', 'Pillo für Windows'),
-    subtitle: L('On-device voice dictation for Windows.', 'Sprachdiktat für Windows, direkt auf dem Gerät.'),
-    status: L('In development', 'In Entwicklung'),
-    collaborator: 'Claude AI',
-    tech: ['C#', '.NET 10', 'WPF', 'NAudio', 'sherpa-onnx', L('Parakeet speech model', 'Parakeet-Sprachmodell')],
-    caseStudy: {
-      problem: L(
-        'Typing everything by hand is slow. The goal: dictate into any Windows app, with speech recognition running on the PC itself.',
-        'Alles von Hand zu tippen ist langsam. Das Ziel: in jede Windows-App diktieren, mit Spracherkennung direkt auf dem PC.',
-      ),
-      approach: L(
-        'Porting the macOS dictation app Pillo to Windows, together with Claude AI: C# and WPF for the app, NAudio for the microphone, sherpa-onnx to run the Parakeet speech model locally.',
-        'Portierung der macOS-Diktier-App Pillo auf Windows, gemeinsam mit Claude AI: C# und WPF für die App, NAudio für das Mikrofon, sherpa-onnx für das lokale Parakeet-Sprachmodell.',
-      ),
-      result: L(
-        'In development. The app already runs on Windows — onboarding, design and the text pipeline are in place.',
-        'In Entwicklung. Die App läuft bereits unter Windows — Onboarding, Design und Text-Pipeline stehen.',
-      ),
-    },
-    pipeline: [
-      L('Hotkey', 'Tastenkürzel'),
-      L('Microphone · NAudio', 'Mikrofon · NAudio'),
-      L('Speech model on the device', 'Sprachmodell auf dem Gerät'),
-      L('Text at the cursor', 'Text am Cursor'),
-    ],
-    capabilities: [
-      L('Global hotkey to start dictation', 'Globales Tastenkürzel zum Starten des Diktats'),
-      L('On-device speech recognition', 'Spracherkennung direkt auf dem Gerät'),
-      L('Text typed at the cursor in any app', 'Text erscheint am Cursor in jeder App'),
-      L('Dictionary, formatting and voice shortcuts', 'Wörterbuch, Formatierung und Sprachbefehle'),
-      L('Floating pill overlay', 'Schwebendes Pill-Overlay'),
-      L('Transcript history', 'Verlauf der Transkripte'),
-    ],
-  },
-  {
     id: 'sales-dashboard',
-    number: '03',
+    number: '01',
     type: 'dashboard',
-    question: L('And a data project?', 'Und ein Datenprojekt?'),
+    question: L('What has he built?', 'Was hat er gebaut?'),
     answer: L(
       'His main data project is an interactive sales dashboard. With SQL and Python he cleaned and prepared sales and customer data, then built KPI views in Tableau for reports and business insights.',
       'Sein wichtigstes Datenprojekt ist ein interaktives Sales-Dashboard. Mit SQL und Python hat er Vertriebs- und Kundendaten bereinigt und aufbereitet und daraus KPI-Ansichten in Tableau für Berichte und geschäftliche Erkenntnisse gebaut.',
@@ -241,15 +157,96 @@ const projects = [
       L('Business insights', 'Geschäftliche Erkenntnisse'),
     ],
   },
+  {
+    id: 'pillo',
+    number: '02',
+    type: 'app',
+    question: L('What is he building right now?', 'Woran arbeitet er gerade?'),
+    answer: L(
+      'Right now he is building Pillo for Windows, together with Claude AI: press a hotkey, speak, and your words appear wherever your cursor is. The speech model runs directly on the device.',
+      'Gerade entwickelt er gemeinsam mit Claude AI „Pillo für Windows“: Tastenkürzel drücken, sprechen — und die Worte erscheinen dort, wo der Cursor steht. Das Sprachmodell läuft direkt auf dem Gerät.',
+    ),
+    title: L('Pillo for Windows', 'Pillo für Windows'),
+    subtitle: L('On-device voice dictation for Windows.', 'Sprachdiktat für Windows, direkt auf dem Gerät.'),
+    status: L('In development', 'In Entwicklung'),
+    collaborator: 'Claude AI',
+    tech: ['C#', '.NET 10', 'WPF', 'NAudio', 'sherpa-onnx', L('Parakeet speech model', 'Parakeet-Sprachmodell'), 'SQLite'],
+    caseStudy: {
+      problem: L(
+        'Typing everything by hand is slow. The goal: dictate into any Windows app, with speech recognition running on the PC itself.',
+        'Alles von Hand zu tippen ist langsam. Das Ziel: in jede Windows-App diktieren, mit Spracherkennung direkt auf dem PC.',
+      ),
+      approach: L(
+        'Porting the macOS dictation app Pillo to Windows, together with Claude AI: C# and WPF for the app, NAudio for the microphone, sherpa-onnx to run the Parakeet speech model locally.',
+        'Portierung der macOS-Diktier-App Pillo auf Windows, gemeinsam mit Claude AI: C# und WPF für die App, NAudio für das Mikrofon, sherpa-onnx für das lokale Parakeet-Sprachmodell.',
+      ),
+      result: L(
+        'In development. The app already runs on Windows — onboarding, design and the text pipeline are in place.',
+        'In Entwicklung. Die App läuft bereits unter Windows — Onboarding, Design und Text-Pipeline stehen.',
+      ),
+    },
+    pipeline: [
+      L('Hotkey', 'Tastenkürzel'),
+      L('Microphone · NAudio', 'Mikrofon · NAudio'),
+      L('Speech model on the device', 'Sprachmodell auf dem Gerät'),
+      L('Text at the cursor', 'Text am Cursor'),
+    ],
+    capabilities: [
+      L('Global hotkey to start dictation', 'Globales Tastenkürzel zum Starten des Diktats'),
+      L('On-device speech recognition', 'Spracherkennung direkt auf dem Gerät'),
+      L('Voice activity detection', 'Sprachaktivitätserkennung'),
+      L('Text typed at the cursor in any app (simulated keyboard input)', 'Text erscheint am Cursor in jeder App (simulierte Tastatureingabe)'),
+      L('Control from the system tray', 'Steuerung über den Infobereich'),
+      L('Dictionary, formatting and voice shortcuts', 'Wörterbuch, Formatierung und Sprachbefehle'),
+      L('Floating pill overlay', 'Schwebendes Pill-Overlay'),
+      L('Transcript history in SQLite', 'Transkriptionsverlauf in SQLite'),
+    ],
+  },
+  {
+    id: 'personal-website',
+    number: '03',
+    type: 'web',
+    question: L('And on the web?', 'Und im Web?'),
+    answer: L(
+      'He built and published his personal website: a portfolio for his projects and technical skills, made with React, Tailwind CSS and Vite and hosted on GitHub Pages.',
+      'Er hat seine persönliche Website gebaut und veröffentlicht: ein Portfolio für seine Projekte und technischen Kenntnisse, mit React, Tailwind CSS und Vite, gehostet auf GitHub Pages.',
+    ),
+    title: L('Personal website', 'Persönliche Website'),
+    subtitle: L('A portfolio for his projects and technical skills.', 'Ein Portfolio für seine Projekte und technischen Kenntnisse.'),
+    tech: ['React', 'Tailwind CSS', 'Vite', 'GitHub Pages'],
+    caseStudy: {
+      problem: L(
+        'He wanted one place online that shows his projects and technical skills.',
+        'Er wollte einen Ort im Netz, der seine Projekte und technischen Kenntnisse zeigt.',
+      ),
+      approach: L(
+        'Built the site with React and Tailwind CSS, bundled with Vite.',
+        'Die Website mit React und Tailwind CSS gebaut, gebündelt mit Vite.',
+      ),
+      result: L('Published on GitHub Pages — open it below.', 'Auf GitHub Pages veröffentlicht — unten öffnen.'),
+    },
+    pipeline: [
+      L('React components', 'React-Komponenten'),
+      'Tailwind CSS',
+      L('Vite build', 'Vite-Build'),
+      'GitHub Pages',
+    ],
+    capabilities: [],
+    links: [
+      { label: L('Open the website', 'Website öffnen'), href: personal.website },
+      { label: L('Code on GitHub', 'Code auf GitHub'), href: personal.websiteRepository },
+    ],
+  },
 ]
 
-// Skill levels are written exactly as on the CV ("Advanced" / "Good").
+// Skill levels as given by Tejeshwaran ("Advanced" / "Good" / "Basic").
 // Items without a level show no badge. `learning: true` = learning it now,
 // shown differently so nothing looks bigger than it is.
 // `evidence` says where the group was actually used.
 // `aliases` help the chat recognise a skill in a question ("Does he know React?").
 const ADVANCED = { key: 'advanced', label: L('Advanced', 'Sehr gut') }
 const GOOD = { key: 'good', label: L('Good', 'Gut') }
+const BASIC = { key: 'basic', label: L('Basic', 'Grundkenntnisse') }
 
 // In slide mode each skill group is its own slide (question / answer below).
 const skills = [
@@ -257,22 +254,17 @@ const skills = [
     id: 'data',
     question: L('What data tools does he work with?', 'Mit welchen Daten-Tools arbeitet er?'),
     answer: L(
-      'Data is his core: Python with pandas, NumPy, Seaborn and pyplot, plus SQL and Tableau — all rated advanced on his CV. He used them in his Master\'s and in the Sales Dashboard.',
-      'Daten sind sein Kern: Python mit pandas, NumPy, Seaborn und pyplot, dazu SQL und Tableau — alle im Lebenslauf mit „sehr gut“ bewertet. Er hat sie im Master und im Sales-Dashboard eingesetzt.',
+      'Data is his core: Python, SQL and Tableau — all advanced. He used them in his Master\'s and in the Sales Dashboard.',
+      'Daten sind sein Kern: Python, SQL und Tableau — alle auf sehr gutem Niveau. Er hat sie im Master und im Sales-Dashboard eingesetzt.',
     ),
     name: L('Data & analytics', 'Daten & Analyse'),
     icon: 'chart', // mapped to a Lucide icon in SkillCard.jsx
     evidence: L('Used in: Sales Dashboard · M.Sc. Data Analytics', 'Eingesetzt in: Sales-Dashboard · M.Sc. Data Analytics'),
     items: [
-      { name: 'Python', level: ADVANCED },
-      { name: 'pandas' },
-      { name: 'NumPy' },
-      { name: 'Seaborn' },
-      { name: 'pyplot' },
+      { name: 'Python', level: ADVANCED, aliases: ['python', 'pandas', 'numpy', 'seaborn', 'pyplot', 'matplotlib'] },
       { name: 'SQL', level: ADVANCED, aliases: [' sql', 'sql '] },
       { name: 'Tableau', level: ADVANCED },
       { name: 'MySQL', level: GOOD },
-      { name: 'R', level: GOOD, aliases: [' r ', ' r?', 'r language', 'r-'] },
       { name: 'Excel', level: GOOD },
     ],
   },
@@ -280,24 +272,23 @@ const skills = [
     id: 'web',
     question: L('And web development?', 'Und Webentwicklung?'),
     answer: L(
-      'For the web he works with React, HTML, CSS and Tailwind CSS — rated advanced on his CV — plus Node.js and MongoDB. He did front-end work in his internship, and this portfolio is built with React, Tailwind CSS and Vite.',
-      'Im Web arbeitet er mit React, HTML, CSS und Tailwind CSS — im Lebenslauf mit „sehr gut“ bewertet — sowie mit Node.js und MongoDB. Im Praktikum hat er im Frontend gearbeitet, und dieses Portfolio ist mit React, Tailwind CSS und Vite gebaut.',
+      'For the web he works with React, JavaScript, HTML, CSS, Tailwind CSS, Vite and Git & GitHub — all advanced — plus Node.js and MongoDB. He did front-end work in his internship and built his personal website with React, Tailwind CSS and Vite.',
+      'Im Web arbeitet er mit React, JavaScript, HTML, CSS, Tailwind CSS, Vite sowie Git & GitHub — alle auf sehr gutem Niveau — dazu Node.js und MongoDB. Im Praktikum hat er im Frontend gearbeitet, und seine persönliche Website hat er mit React, Tailwind CSS und Vite gebaut.',
     ),
     name: L('Web development', 'Webentwicklung'),
     icon: 'code',
-    evidence: L('Used in: HermitCrabs internship · this portfolio', 'Eingesetzt in: Praktikum bei HermitCrabs · diesem Portfolio'),
+    evidence: L('Used in: HermitCrabs internship · personal website', 'Eingesetzt in: Praktikum bei HermitCrabs · persönliche Website'),
     items: [
       { name: 'React', level: ADVANCED, aliases: ['react'] },
-      { name: 'JavaScript', aliases: ['javascript', ' js '] },
+      { name: 'JavaScript', level: ADVANCED, aliases: ['javascript', ' js '] },
       { name: 'HTML', level: ADVANCED },
       { name: 'CSS', level: ADVANCED, aliases: [' css'] },
       { name: 'Tailwind CSS', level: ADVANCED, aliases: ['tailwind'] },
       { name: 'Node.js', level: GOOD, aliases: ['node'] },
       { name: 'MongoDB', level: GOOD, aliases: ['mongo'] },
-      { name: 'Vite' },
-      { name: 'Framer Motion', aliases: ['framer'] },
-      { name: L('Responsive design', 'Responsive Design'), aliases: ['responsive'] },
-      { name: 'Git & GitHub', aliases: [' git ', 'github'] },
+      { name: 'Vite', level: ADVANCED },
+      { name: L('Responsive design', 'Responsive Design'), level: GOOD, aliases: ['responsive'] },
+      { name: 'Git & GitHub', level: ADVANCED, aliases: [' git ', 'github'] },
       { name: L('Figma · UI/UX', 'Figma · UI/UX'), learning: true, aliases: ['figma', 'ui/ux', 'ux design'] },
     ],
   },
@@ -305,19 +296,19 @@ const skills = [
     id: 'ai',
     question: L('What about AI and machine learning?', 'Und KI und Machine Learning?'),
     answer: L(
-      'He studied machine learning and predictive analytics in his Master\'s, including big-data analysis on AWS. With Pillo he runs a speech model on a normal PC, and right now he is learning how LLM applications, AI agents and MCP work.',
-      'Im Master hat er Machine Learning und Predictive Analytics studiert, inklusive Big-Data-Analyse auf AWS. Mit Pillo lässt er ein Sprachmodell auf einem normalen PC laufen, und gerade lernt er, wie LLM-Anwendungen, KI-Agenten und MCP funktionieren.',
+      'He studied machine learning and predictive analytics in his Master\'s, data visualization is one of his strengths, and he knows the basics of AWS. With Pillo he works with a speech model that runs on the device, and right now he is learning how LLM applications, AI agents and MCP work.',
+      'Im Master hat er Machine Learning und Predictive Analytics studiert, Datenvisualisierung ist eine seiner Stärken, und er kennt die Grundlagen von AWS. Mit Pillo arbeitet er mit einem Sprachmodell, das direkt auf dem Gerät läuft, und gerade lernt er, wie LLM-Anwendungen, KI-Agenten und MCP funktionieren.',
     ),
     name: L('AI & machine learning', 'KI & Machine Learning'),
     icon: 'ai',
     evidence: L('Studied in the M.Sc. · used in Pillo · learning now', 'Im M.Sc. studiert · in Pillo eingesetzt · lerne ich gerade'),
     items: [
-      { name: 'Machine Learning', aliases: ['machine learning', ' ml '] },
-      { name: 'Predictive Analytics', aliases: ['predictive'] },
-      { name: L('Data Visualization', 'Datenvisualisierung'), aliases: ['visuali'] },
-      { name: 'AWS', aliases: ['aws', 'amazon web'] },
-      { name: L('On-device speech models', 'Sprachmodelle auf dem Gerät'), aliases: ['speech model', 'sprachmodell', 'onnx'] },
-      { name: L('C# / .NET (basic)', 'C# / .NET (Grundlagen)'), aliases: ['c#', '.net', 'dotnet'] },
+      { name: 'Machine Learning', level: GOOD, aliases: ['machine learning', ' ml '] },
+      { name: 'Predictive Analytics', level: GOOD, aliases: ['predictive'] },
+      { name: L('Data Visualization', 'Datenvisualisierung'), level: ADVANCED, aliases: ['visuali'] },
+      { name: 'AWS', level: BASIC, aliases: ['aws', 'amazon web'] },
+      { name: L('On-device speech models', 'Sprachmodelle auf dem Gerät'), level: GOOD, aliases: ['speech model', 'sprachmodell', 'onnx'] },
+      { name: 'C# / .NET', level: BASIC, aliases: ['c#', '.net', 'dotnet'] },
       { name: L('LLM applications', 'LLM-Anwendungen'), learning: true, aliases: ['llm'] },
       { name: L('AI agents', 'KI-Agenten'), learning: true, aliases: ['agent'] },
       { name: 'MCP', learning: true, aliases: [' mcp', 'model context'] },
@@ -376,45 +367,7 @@ const conversation = {
       L('LLMs & agents — learning', 'LLMs & Agenten — lerne ich'),
     ],
   },
-  // "AI journey": three slides (sections/AiJourney.jsx)
-  curiosity: {
-    question: L('What kind of problems does he enjoy?', 'Welche Probleme reizen ihn?'),
-    answer: L(
-      'Finding out why. These are questions about AI systems he is exploring right now — as a learner, not as an expert.',
-      'Herauszufinden, warum. Diese Fragen zu KI-Systemen erkundet er gerade — als Lernender, nicht als Experte.',
-    ),
-    questions: [
-      {
-        question: L('Why did the model give a different answer this time?', 'Warum hat das Modell diesmal anders geantwortet?'),
-        concept: L('Sampling & non-determinism', 'Sampling & Nicht-Determinismus'),
-      },
-      {
-        question: L('What happens when the context gets too long?', 'Was passiert, wenn der Kontext zu lang wird?'),
-        concept: L('Tokens & context windows', 'Tokens & Kontextfenster'),
-      },
-      {
-        question: L('Why does one API request fail while another succeeds?', 'Warum scheitert eine API-Anfrage, während eine andere klappt?'),
-        concept: L('Auth, rate limits & timeouts', 'Auth, Rate Limits & Timeouts'),
-      },
-      {
-        question: L('How does an agent decide which tool to call?', 'Wie entscheidet ein Agent, welches Tool er aufruft?'),
-        concept: L('Agents & tool calling', 'Agenten & Tool-Aufrufe'),
-      },
-      {
-        question: L('How does retrieval change what the model sees?', 'Wie verändert Retrieval, was das Modell sieht?'),
-        concept: 'Retrieval / RAG',
-      },
-      {
-        question: L('What happens between a prompt and a response?', 'Was passiert zwischen Prompt und Antwort?'),
-        concept: L('Inference & latency', 'Inferenz & Latenz'),
-      },
-    ],
-    // Where he has already touched these ideas (only real things)
-    note: L(
-      'Already touched: Pillo runs a speech model on the PC itself, and this portfolio\'s Think mode shows every step of how an answer is found.',
-      'Schon berührt: Pillo lässt ein Sprachmodell direkt auf dem PC laufen, und der Nachdenk-Modus dieses Portfolios zeigt jeden Schritt, wie eine Antwort gefunden wird.',
-    ),
-  },
+  // "AI journey" slide (sections/AiJourney.jsx)
   learning: {
     question: L('What is he learning right now?', 'Was lernt er gerade?'),
     answer: L(
@@ -424,9 +377,8 @@ const conversation = {
     known: [
       L('Machine learning & predictive analytics — M.Sc.', 'Machine Learning & Predictive Analytics — M.Sc.'),
       L('Big-data analysis on AWS — M.Sc.', 'Big-Data-Analyse auf AWS — M.Sc.'),
-      L('Python data stack (pandas, NumPy, Seaborn) — Sales Dashboard', 'Python-Datenstack (pandas, NumPy, Seaborn) — Sales-Dashboard'),
+      L('Python data analysis — Sales Dashboard', 'Datenanalyse mit Python — Sales-Dashboard'),
       L('Running a speech model on the device — Pillo', 'Ein Sprachmodell auf dem Gerät betreiben — Pillo'),
-      L('Grounded Q&A over structured data — this portfolio', 'Faktentreue Fragen & Antworten über strukturierte Daten — dieses Portfolio'),
       L('Building software together with an AI coding assistant', 'Software gemeinsam mit einem KI-Coding-Assistenten bauen'),
     ],
     exploring: [
@@ -438,44 +390,6 @@ const conversation = {
       'Retrieval / RAG',
       L('APIs & AI application architecture', 'APIs & Architektur von KI-Anwendungen'),
       L('AI product UX', 'UX von KI-Produkten'),
-    ],
-  },
-  approach: {
-    question: L('How would he approach a tricky support ticket?', 'Wie würde er ein kniffliges Support-Ticket angehen?'),
-    answer: L(
-      'Here is how he would think it through — an illustration of his approach, not past support experience.',
-      'So würde er es durchdenken — eine Veranschaulichung seiner Herangehensweise, keine bisherige Support-Erfahrung.',
-    ),
-    ticket: L('"The same prompt gave two different answers."', '„Derselbe Prompt hat zwei verschiedene Antworten gegeben.“'),
-    steps: [
-      {
-        title: L('Reproduce', 'Reproduzieren'),
-        text: L(
-          'Same prompt, same model, same settings? Run it a few times and note exactly what changes.',
-          'Gleicher Prompt, gleiches Modell, gleiche Einstellungen? Mehrmals ausführen und genau notieren, was sich ändert.',
-        ),
-      },
-      {
-        title: L('Isolate', 'Eingrenzen'),
-        text: L(
-          'Sampling settings like temperature, a different model version, or earlier messages in the context?',
-          'Sampling-Einstellungen wie Temperature, eine andere Modellversion oder frühere Nachrichten im Kontext?',
-        ),
-      },
-      {
-        title: L('Check', 'Prüfen'),
-        text: L(
-          'Read the request and the API response: which model and which parameters were really used?',
-          'Anfrage und API-Antwort lesen: Welches Modell und welche Parameter wurden wirklich genutzt?',
-        ),
-      },
-      {
-        title: L('Explain', 'Erklären'),
-        text: L(
-          'Tell the customer in plain words why it happens — and what to change if they need stable answers.',
-          'Dem Kunden in einfachen Worten erklären, warum das passiert — und was er ändern kann, wenn er stabile Antworten braucht.',
-        ),
-      },
     ],
   },
   education: {
@@ -522,7 +436,7 @@ const conversation = {
       {
         from: L('Web development', 'Webentwicklung'),
         gives: L('Understands how software and interfaces fit together', 'Versteht, wie Software und Oberflächen zusammenspielen'),
-        evidence: L('Front-end internship · this portfolio', 'Frontend-Praktikum · dieses Portfolio'),
+        evidence: L('Front-end internship · personal website', 'Frontend-Praktikum · persönliche Website'),
       },
       {
         from: L('AI / ML learning', 'KI/ML lernen'),
@@ -537,7 +451,7 @@ const conversation = {
       {
         from: L('Projects', 'Projekte'),
         gives: L('Builds and experiments instead of only reading', 'Baut und experimentiert, statt nur zu lesen'),
-        evidence: 'Portfolio-Langdock · Pillo · Sales Dashboard',
+        evidence: L('Sales Dashboard · Pillo · personal website', 'Sales-Dashboard · Pillo · persönliche Website'),
       },
     ],
     role: 'AI Associate',
@@ -670,8 +584,8 @@ function buildResponses(data, language) {
   const job = jobs[0]
   const dashboard = work.find((project) => project.id === 'sales-dashboard')
   const pillo = work.find((project) => project.id === 'pillo')
-  const portfolio = work.find((project) => project.id === 'portfolio-langdock')
-  const { curiosity, learning, approach } = data.conversation
+  const website = work.find((project) => project.id === 'personal-website')
+  const { learning } = data.conversation
   const projectSlide = (id) => {
     const index = work.findIndex((project) => project.id === id)
     return index === 0 ? 'projects' : `projects-${index + 1}`
@@ -693,8 +607,8 @@ function buildResponses(data, language) {
       topic: 'cv',
       keywords: [' cv', 'resume', 'résumé', 'lebenslauf', 'download'],
       answer: de
-        ? 'Hier ist sein Lebenslauf als PDF — mit allen Details zu Ausbildung, Praktikum, Projekten und Kenntnissen.'
-        : 'Here is his CV as a PDF — with all details on his education, internship, projects and skills.',
+        ? 'Hier ist sein aktueller Lebenslauf als PDF — mit Ausbildung, Praktikum, Projekten und Kenntnissen.'
+        : 'Here is his current CV as a PDF (in German) — with his education, internship, projects and skills.',
       link: { label: de ? 'Lebenslauf herunterladen (PDF)' : 'Download CV (PDF)', href: me.cv, download: true },
     },
     {
@@ -703,8 +617,10 @@ function buildResponses(data, language) {
         'portfolio', 'this website', 'this site', 'webseite', 'website', 'github', 'source code', 'quellcode', ' repo',
         'the code', 'his code', 'seinen code', 'den code',
       ],
-      answer: `${portfolio.answer} ${portfolio.caseStudy.result}`,
-      link: open(projectSlide('portfolio-langdock')),
+      answer: de
+        ? `${website.answer} Den Code dieser Bewerbungsseite findest du ebenfalls auf GitHub.`
+        : `${website.answer} The code of this application site is on GitHub too.`,
+      link: { label: de ? 'Website öffnen' : 'Open his website', href: me.website },
     },
     {
       topic: 'learning',
@@ -715,7 +631,7 @@ function buildResponses(data, language) {
       answer: de
         ? `Gebaut oder studiert: ${learning.known.join('; ')}. Lernt er gerade: ${learning.exploring.join(', ')}.`
         : `Built or studied: ${learning.known.join('; ')}. Learning now: ${learning.exploring.join(', ')}.`,
-      link: open('journey-2'),
+      link: open('journey'),
     },
     {
       topic: 'curiosity',
@@ -723,19 +639,10 @@ function buildResponses(data, language) {
         'interested in ai', 'interest in ai', 'why ai', 'curious', 'neugier', 'interessiert er sich für ki', 'warum ki',
         'under the hood', 'unter der haube', 'how ai works', 'wie ki funktioniert',
       ],
-      answer: `${curiosity.answer} ${curiosity.questions.map((item) => item.question).slice(0, 3).join(' ')}`,
-      link: open('journey'),
-    },
-    {
-      topic: 'support',
-      keywords: [
-        'support', 'ticket', 'debug', 'troubleshoot', 'problem solving', 'problemlös', 'root cause', 'fehlersuche',
-        'reproduce', 'reproduzier',
-      ],
       answer: de
-        ? `${approach.answer} Beispiel: ${approach.ticket} — ${approach.steps.map((step) => step.title).join(' → ')}. Professionelle Support-Erfahrung hat er noch nicht.`
-        : `${approach.answer} Example: ${approach.ticket} — ${approach.steps.map((step) => step.title).join(' → ')}. He does not have professional support experience yet.`,
-      link: open('journey-3'),
+        ? `${me.quote} Im Master hat er Machine Learning studiert, in Pillo arbeitet er mit einem Sprachmodell auf dem Gerät, und gerade lernt er: ${learning.exploring.slice(0, 5).join(', ')}.`
+        : `${me.quote} He studied machine learning in his Master's, works with an on-device speech model in Pillo, and is now learning: ${learning.exploring.slice(0, 5).join(', ')}.`,
+      link: open('journey'),
     },
     {
       topic: 'langdock',
@@ -826,8 +733,8 @@ function buildResponses(data, language) {
         'data', 'daten',
       ],
       answer: de
-        ? `Seine Stärken sind Datenanalyse und Webentwicklung. Im Lebenslauf mit „sehr gut“ bewertet: ${advancedSkills}. Gerade lernt er: ${learningSkills}.`
-        : `His strengths are data analytics and web development. Rated "advanced" on his CV: ${advancedSkills}. Learning now: ${learningSkills}.`,
+        ? `Seine Stärken sind Datenanalyse und Webentwicklung. Sehr gut: ${advancedSkills}. Gerade lernt er: ${learningSkills}.`
+        : `His strengths are data analytics and web development. Advanced: ${advancedSkills}. Learning now: ${learningSkills}.`,
       link: open('skills'),
     },
     {
@@ -892,8 +799,8 @@ function buildSkillAnswers(skillGroups, language) {
           : `He is learning ${item.name} right now — no professional experience with it yet.`
       } else if (item.level) {
         answer = de
-          ? `Ja. ${item.name} ist in seinem Lebenslauf mit „${item.level.label.toLowerCase()}“ bewertet. ${group.evidence}.`
-          : `Yes. ${item.name} is rated "${item.level.label.toLowerCase()}" on his CV. ${group.evidence}.`
+          ? `Ja. Sein Niveau in ${item.name}: ${item.level.label}. ${group.evidence}.`
+          : `Yes. His level in ${item.name}: ${item.level.label.toLowerCase()}. ${group.evidence}.`
       } else {
         answer = de
           ? `Ja, ${item.name} gehört zu seinem Bereich „${group.name}“. ${group.evidence}.`

@@ -28,7 +28,7 @@ export function groupSlideId(group, index) {
 // (The projects have their own list in the sidebar, under "Projects".)
 export const SECTION_ITEMS = [
   { labelKey: 'topicAbout', icon: UserRound, slides: ['about'] },
-  { labelKey: 'topicJourney', icon: Compass, slides: ['journey', 'journey-2', 'journey-3'] },
+  { labelKey: 'topicJourney', icon: Compass, slides: ['journey'] },
   { labelKey: 'topicExperience', icon: Briefcase, slides: ['experience'] },
   { labelKey: 'topicSkills', icon: Layers, slides: ['skills', 'skills-2', 'skills-3'] },
   { labelKey: 'topicEducation', icon: GraduationCap, slides: ['education', 'education-2'] },
@@ -54,7 +54,7 @@ export function slideTitle(slideId, { data, t, chatTitle }) {
   if (group === 'projects') return data.projects[index]?.title || t('topicProjects')
   if (group === 'education') return `${t('topicEducation')} · ${data.education[index]?.level}`
   if (group === 'skills') return `${t('topicSkills')} · ${data.skills[index]?.name}`
-  if (group === 'journey') return `${t('topicJourney')} · ${[t('underTheHood'), t('learningNow'), t('approachTitle')][index]}`
+  if (group === 'journey') return `${t('topicJourney')} · ${t('learningNow')}`
 
   const item = SECTION_ITEMS.find((section) => section.slides.includes(slideId))
   return item ? t(item.labelKey) : ''

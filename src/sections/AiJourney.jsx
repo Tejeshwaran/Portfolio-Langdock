@@ -1,35 +1,9 @@
-import { Check, CircleDashed, HelpCircle, Ticket } from 'lucide-react'
+import { Check, CircleDashed } from 'lucide-react'
 import ConversationBlock from '../components/ConversationBlock'
 import PopIn from '../components/PopIn'
 import { useLanguage } from '../i18n/LanguageContext'
 
-/** Part 1 — the questions about AI systems he is exploring (as a learner) */
-function CuriosityPart({ curiosity }) {
-  const { t } = useLanguage()
-  return (
-    <>
-      <ul className="grid gap-2.5 sm:grid-cols-2">
-        {curiosity.questions.map((item) => (
-          <PopIn as="li" key={item.question} className="rounded-xl border border-line bg-surface p-3.5 shadow-card">
-            <p className="flex items-start gap-2 text-[14px] font-medium leading-snug text-ink">
-              <HelpCircle size={16} aria-hidden="true" className="mt-px shrink-0 text-accent" />
-              {item.question}
-            </p>
-            <p className="mt-2 pl-6">
-              <span className="rounded-md border border-dashed border-line-strong px-2 py-0.5 text-[11.5px] text-muted">
-                <span className="sr-only">{t('exploring')}: </span>
-                {item.concept}
-              </span>
-            </p>
-          </PopIn>
-        ))}
-      </ul>
-      <p className="mt-3 text-[13px] leading-relaxed text-muted">{curiosity.note}</p>
-    </>
-  )
-}
-
-/** Part 2 — what he has built or studied, next to what he is learning */
+/** What he has built or studied, next to what he is learning */
 function LearningPart({ learning }) {
   const { t } = useLanguage()
   return (
@@ -60,46 +34,14 @@ function LearningPart({ learning }) {
   )
 }
 
-/** Part 3 — how he would work through a support ticket (an illustration) */
-function ApproachPart({ approach }) {
-  const { t } = useLanguage()
-  return (
-    <PopIn className="rounded-2xl border border-line bg-surface p-4 shadow-card sm:p-5">
-      <p className="flex items-center gap-2 text-[13px] text-muted">
-        <Ticket size={15} aria-hidden="true" className="text-accent" />
-        {t('exampleTicket')}
-      </p>
-      <p className="mt-1 text-[15px] font-medium text-ink">{approach.ticket}</p>
-      <ol className="mt-4 grid gap-2.5 sm:grid-cols-2">
-        {approach.steps.map((step, index) => (
-          <PopIn as="li" key={step.title} className="flex gap-3 rounded-xl border border-line bg-canvas p-3">
-            <span
-              aria-hidden="true"
-              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-soft font-mono text-[12px] font-medium text-accent-strong"
-            >
-              {index + 1}
-            </span>
-            <span>
-              <span className="block text-[13.5px] font-medium text-ink">{step.title}</span>
-              <span className="mt-0.5 block text-[13px] leading-relaxed text-body">{step.text}</span>
-            </span>
-          </PopIn>
-        ))}
-      </ol>
-    </PopIn>
-  )
-}
-
-const PARTS = ['curiosity', 'learning', 'approach']
-const SLIDE_IDS = ['journey', 'journey-2', 'journey-3']
+const PARTS = ['learning']
+const SLIDE_IDS = ['journey']
 
 /**
- * "AI journey" — three slides that show (not tell) how he approaches AI:
- *  1. curiosity  the questions about AI systems he is exploring
- *  2. learning   built or studied  |  learning now
- *  3. approach   how he would work through a support ticket
+ * "AI journey" — what he has built or studied, next to what he is
+ * learning right now (one slide; PARTS can hold more parts later).
  * Everything is framed as learning — nothing claims expert knowledge.
- * Texts: conversation.curiosity / learning / approach in portfolioData.js.
+ * Texts: conversation.learning in portfolioData.js.
  */
 export default function AiJourney({ partIndex = 0 }) {
   const { data, t } = useLanguage()
@@ -109,9 +51,7 @@ export default function AiJourney({ partIndex = 0 }) {
   return (
     <section id={SLIDE_IDS[partIndex]} aria-label={t('topicJourney')} className="py-12 sm:py-16">
       <ConversationBlock topic={t('topicJourney')} question={content.question} answer={content.answer}>
-        {part === 'curiosity' && <CuriosityPart curiosity={content} />}
         {part === 'learning' && <LearningPart learning={content} />}
-        {part === 'approach' && <ApproachPart approach={content} />}
       </ConversationBlock>
     </section>
   )

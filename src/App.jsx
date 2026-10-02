@@ -29,7 +29,7 @@ const Onboarding = lazy(() => import('./onboarding/Onboarding'))
  * fades from one slide to the next (SlideDeck.jsx).
  *
  * The order follows what a recruiter for the AI Associate program wants to
- * know first: who → AI journey (curiosity, learning, approach) → what he
+ * know first: who → AI journey (learning, approach) → what he
  * built → experience → skills → education → why the program → languages →
  * beyond IT → contact.
  *

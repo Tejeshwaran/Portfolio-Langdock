@@ -30,11 +30,8 @@ Every fact comes from my CV (`public/cv/`) or from the projects themselves.
 - **Start page** — name, direction ("Data & AI-focused developer"), stack
   at a glance, direct actions (Explore my work · View CV · GitHub ·
   Contact) and six suggested prompts that work as navigation.
-- **AI journey** — three slides that show how I approach AI instead of
-  claiming expertise: the questions about AI systems I am exploring
-  ("Why did the model give a different answer?"), what I have built or
-  studied next to what I am still learning, and how I would work through
-  a support ticket (clearly marked as an illustration).
+- **AI journey** — what I have built or studied, next to what I am still
+  learning — instead of claiming expertise.
 - **Ask my portfolio** — a local answer engine (`src/utils/answerEngine.js`):
   keyword matching over answers generated from `portfolioData.js`, plus
   direct skill questions ("Does he know React?" → the level from the CV and
@@ -44,11 +41,11 @@ Every fact comes from my CV (`public/cv/`) or from the projects themselves.
   question → search the topics → matched keyword → write the answer).
 - **Slides** — one scroll or swipe = one part (projects, experience, skills,
   education, why Langdock, …). The sidebar jumps anywhere.
-- **Projects as case studies** — this portfolio, Pillo (on-device dictation,
-  in development) and a Tableau sales dashboard: problem → approach →
-  result, a "how it works" flow and expandable details.
-- **Skills with honest labels** — CV level ("Advanced" / "Good"), "Learning"
-  for things I am learning now, and where each group was used.
+- **Projects as case studies** — a Tableau sales dashboard, Pillo
+  (on-device dictation, in development) and my personal website: problem →
+  approach → result, a "how it works" flow and links.
+- **Skills with honest labels** — level ("Advanced" / "Good" / "Basic"),
+  "Learning" for things I am learning now, and where each group was used.
 - **English / German**, **dark / light**, voice input (Web Speech API).
 
 ## Tech
@@ -77,7 +74,7 @@ src/
                           Experience, Skills, Education, WhyLangdock, Languages,
                           BeyondWork, Footer
   onboarding/             the welcome page ("Hello, Langdock team."), lazy-loaded
-public/cv/                CV as PDF (English and German)
+public/cv/                current CV as PDF (German)
 ```
 
 **Data flow.** `portfolioData.js` holds every text once, in both languages
@@ -137,7 +134,7 @@ npx vercel deploy --prod
 - **Personal details, projects, skills, all texts:** `src/data/portfolioData.js`.
   Empty values (e.g. `linkedin: ''`) are hidden everywhere automatically.
 - **Interface words (EN / DE):** `src/i18n/uiText.js`.
-- **CV files:** replace the PDFs in `public/cv/` (keep the file names).
+- **CV file:** replace the PDF in `public/cv/` (keep the file name).
 - **Colours:** `src/index.css` (one block for light, one for dark).
 - **Welcome page:** switch off with `ONBOARDING_ENABLED` in `src/config/onboarding.js`
   (or add `?intro=0` to the address to skip it once).

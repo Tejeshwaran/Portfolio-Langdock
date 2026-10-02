@@ -9,7 +9,7 @@ const CATEGORY_ICONS = { chart: BarChart3, code: Code2, ai: Brain }
 
 /**
  * An expandable skill category (accordion item).
- *  - levels are written exactly as on the CV ("Advanced" / "Good")
+ *  - levels as given by Tejeshwaran ("Advanced" / "Good" / "Basic")
  *  - skills he is learning right now get a dashed outline and a
  *    "Learning" tag, so nothing looks bigger than it is
  *  - the last line says where the group was actually used (`evidence`)
@@ -88,7 +88,11 @@ export default function SkillCard({ category, defaultOpen = true }) {
                   {skill.level && (
                     <span
                       className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${
-                        skill.level.key === 'advanced' ? 'bg-accent-soft text-accent-strong' : 'bg-subtle text-body'
+                        skill.level.key === 'advanced'
+                          ? 'bg-accent-soft text-accent-strong'
+                          : skill.level.key === 'good'
+                            ? 'bg-subtle text-body'
+                            : 'border border-line text-muted'
                       }`}
                     >
                       {skill.level.label}
